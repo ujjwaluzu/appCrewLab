@@ -106,7 +106,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         <div>
           <div className="mb-2 flex items-center justify-between">
             <label htmlFor="password" className="block text-sm font-semibold text-[#33433a]">Password</label>
-            {!isSignup ? <span className="text-xs text-[#8a958d]">Keep it secure</span> : null}
+            {!isSignup ? <Link href="/auth/reset-password" className="text-xs font-semibold text-[#59665d] underline decoration-[#b7c58b] decoration-2 underline-offset-4 hover:text-[#17251f]">Forgot password?</Link> : null}
           </div>
           <input id="password" name="password" type="password" autoComplete={isSignup ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} className="form-input" placeholder="••••••••" aria-invalid={Boolean(error)} />
         </div>

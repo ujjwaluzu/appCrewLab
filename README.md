@@ -23,7 +23,7 @@ Copy `.env.example` to `.env.local` and fill in the Supabase URL and publishable
 Configure these in Supabase Authentication → URL Configuration:
 
 - Site URL: the current environment’s origin.
-- Redirect URLs: `http://localhost:3000/auth/callback`, your Vercel preview origin followed by `/auth/callback`, and `https://app.crewlab.ujjwaluzu.in/auth/callback`.
+- Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/auth/reset-password`, your Vercel preview origin followed by `/auth/callback` and `/auth/reset-password`, and the equivalent two paths on `https://app.crewlab.ujjwaluzu.in`.
 
 The app derives redirect origins from the current request/browser origin, so preview deployments do not fall back to production. `NEXT_PUBLIC_SITE_URL` is a local/server fallback and should match the deployment origin in each environment.
 
