@@ -1,6 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+CrewLab’s authentication and onboarding foundation, built with Next.js App Router and Supabase Auth.
 
-## Getting Started
+## Getting started
 
 First, run the development server:
 
@@ -14,7 +14,18 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Copy `.env.example` to `.env.local` and fill in the Supabase URL and publishable/anon key. Apply `supabase/migrations/20260926000000_auth_onboarding.sql` to the Supabase project before testing signup.
+
+## Supabase Auth redirect URLs
+
+Configure these in Supabase Authentication → URL Configuration:
+
+- Site URL: the current environment’s origin.
+- Redirect URLs: `http://localhost:3000/auth/callback`, your Vercel preview origin followed by `/auth/callback`, and `https://app.crewlab.ujjwaluzu.in/auth/callback`.
+
+The app derives redirect origins from the current request/browser origin, so preview deployments do not fall back to production. `NEXT_PUBLIC_SITE_URL` is a local/server fallback and should match the deployment origin in each environment.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
@@ -34,3 +45,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+The current scope intentionally stops at entry routing, auth, profile onboarding, and the `/home` placeholder.
