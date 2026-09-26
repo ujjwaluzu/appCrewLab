@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { humanizeAuthError } from "@/lib/auth-errors";
 import { getSiteUrl } from "@/lib/site";
@@ -11,7 +10,6 @@ import { createClient } from "@/lib/supabase/browser";
 type ResetMode = "request" | "update" | "success";
 
 export function ResetPasswordForm() {
-  const router = useRouter();
   const [mode, setMode] = useState<ResetMode>("request");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
