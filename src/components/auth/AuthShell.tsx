@@ -10,7 +10,7 @@ export function AuthShell({ children, aside = true }: { children: ReactNode; asi
           <aside className="relative hidden overflow-hidden bg-[#17251f] p-10 text-[#f8faef] lg:flex lg:w-[42%] lg:flex-col lg:justify-between">
             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full border border-[#e7ff70]/20" />
             <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full border border-[#e7ff70]/10" />
-            <Brand />
+            <Brand surface="light" />
             <div className="relative max-w-sm">
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-[#e7ff70]">Build in good company</p>
               <h1 className="text-5xl font-semibold leading-[0.98] tracking-[-0.065em]">

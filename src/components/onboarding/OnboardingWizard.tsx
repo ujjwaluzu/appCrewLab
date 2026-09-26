@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { Brand } from "@/components/Brand";
 import { allSkills, skillCategories, type Skill, type SkillCategory } from "@/data/skills";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -306,7 +307,7 @@ export function OnboardingWizard() {
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-[#17251f]/10 bg-[#fcfcf8] shadow-[0_24px_80px_rgba(23,37,31,0.09)] lg:min-h-[calc(100vh-4rem)] lg:flex-row">
         <aside className="flex flex-col justify-between bg-[#17251f] p-7 text-[#f8faef] sm:p-10 lg:w-[36%]">
           <div>
-            <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e7ff70] text-sm font-bold text-[#17251f]">C</span><span className="text-lg font-semibold tracking-[-0.04em]">CrewLab</span></div>
+            <Brand surface="light" />
             <div className="mt-16 max-w-xs sm:mt-24">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7ff70]">Your starting point</p>
               <h1 className="mt-5 text-4xl font-semibold leading-[1] tracking-[-0.06em] sm:text-5xl">Let&apos;s make your profile feel like you.</h1>
