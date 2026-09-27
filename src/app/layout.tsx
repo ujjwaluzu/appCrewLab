@@ -15,14 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CrewLab — Build in good company",
   description: "Find people who want to build the same things you do.",
+  manifest: "/favicon_io/site.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/crewlab-icon.webp", type: "image/webp" },
-      { url: "/crewlab-icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/crewlab-icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon_io/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon_io/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: [{ url: "/crewlab-icon-180.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon_io/favicon.ico",
+    apple: [{ url: "/favicon_io/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 

@@ -12,6 +12,18 @@ export type SelectedSkill = {
   name: string;
 };
 
+function CheckIcon() {
+  return <svg viewBox="0 0 16 16" aria-hidden="true" className="h-3.5 w-3.5" fill="none"><path d="m3 8 3.1 3.1L13 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
+function SearchIcon() {
+  return <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4" fill="none"><circle cx="8.8" cy="8.8" r="5.8" stroke="currentColor" strokeWidth="1.6" /><path d="m13.2 13.2 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>;
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return <svg viewBox="0 0 16 16" aria-hidden="true" className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} fill="none"><path d="m3.5 6 4.5 4 4.5-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
 export function SkillPicker({
   selectedSkills,
   onChange,
@@ -26,7 +38,6 @@ export function SkillPicker({
 
   const visibleCategories = useMemo(() => {
     if (!query) return skillCategories;
-
     return skillCategories
       .map((category) => ({ ...category, skills: category.skills.filter((skill) => skill.name.toLowerCase().includes(query)) }))
       .filter((category) => category.skills.length > 0);
@@ -38,23 +49,15 @@ export function SkillPicker({
 
   function toggleSkill(skill: Skill) {
     setSkillMessage("");
-
     if (isSelected(skill.id)) {
       onChange(selectedSkills.filter((selectedSkill) => selectedSkill.slug !== skill.id));
       return;
     }
-
     if (selectedSkills.length >= MAX_SKILLS) {
-      setSkillMessage(`You can select up to ${MAX_SKILLS} skills.`);
+      setSkillMessage(`Choose up to ${MAX_SKILLS} skills.`);
       return;
     }
-
     onChange([...selectedSkills, { slug: skill.id, name: skill.name }]);
-  }
-
-  function removeSkill(slug: string) {
-    onChange(selectedSkills.filter((skill) => skill.slug !== slug));
-    setSkillMessage("");
   }
 
   function toggleCategory(categoryId: string) {
@@ -72,66 +75,65 @@ export function SkillPicker({
         type="button"
         aria-pressed={active}
         onClick={() => toggleSkill(skill)}
-        className={`group flex min-h-14 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${active ? "border-[#17251f] bg-[#17251f] text-white shadow-[0_8px_18px_rgba(23,37,31,0.12)]" : "border-[#17251f]/10 bg-white text-[#4e5d53] hover:border-[#17251f]/30 hover:bg-[#f8faf2]"}`}
+        className={`skill-option ${active ? "is-selected" : ""}`}
       >
         <span className="min-w-0">
           <span className="block truncate">{skill.name}</span>
-          {query ? <span className={`mt-1 block truncate text-[0.68rem] font-medium ${active ? "text-[#cbd9a0]" : "text-[#8a958d]"}`}>{categoryName}</span> : null}
+          {query ? <span className="skill-option-category">{categoryName}</span> : null}
         </span>
-        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs transition ${active ? "border-[#e7ff70] bg-[#e7ff70] font-bold text-[#17251f]" : "border-[#17251f]/15 text-transparent group-hover:border-[#17251f]/30"}`} aria-hidden>
-          {active ? "✓" : ""}
-        </span>
+        <span className="skill-option-check" aria-hidden="true">{active ? <CheckIcon /> : null}</span>
       </button>
     );
   }
 
   return (
-    <div>
-      <div className="rounded-2xl border border-[#17251f]/10 bg-[#f7f8f1] p-4 sm:p-5">
+    <div className="skill-picker">
+      <div className="skill-selection">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#738178]">Your skills</p>
-          <span className="text-xs text-[#8a958d]">{selectedSkills.length} / {MAX_SKILLS} selected</span>
+          <p className="skill-section-label">Selected skills</p>
+          <span className="skill-count">{selectedSkills.length} / {MAX_SKILLS}</span>
         </div>
         {selectedSkills.length ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {selectedSkills.map((skill) => (
-              <span key={skill.slug} className="inline-flex items-center gap-2 rounded-full bg-[#17251f] px-3 py-2 text-xs font-semibold text-white">
+              <span key={skill.slug} className="skill-chip">
                 {skill.name}
-                <button type="button" onClick={() => removeSkill(skill.slug)} aria-label={`Remove ${skill.name}`} className="flex h-4 w-4 items-center justify-center rounded-full text-[#e7ff70] transition hover:bg-white/15">&times;</button>
+                <button type="button" onClick={() => onChange(selectedSkills.filter((item) => item.slug !== skill.slug))} aria-label={`Remove ${skill.name}`} className="skill-chip-remove">×</button>
               </span>
             ))}
           </div>
-        ) : <p className="mt-3 text-sm text-[#8a958d]">Your selected skills will appear here.</p>}
+        ) : <p className="mt-2 text-sm text-[#7a7466]">Pick the skills you want your future crew to see.</p>}
       </div>
 
-      <div className="relative mt-5">
+      <div className="skill-search-wrap">
         <label htmlFor="skill-search" className="sr-only">Search skills</label>
-        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#879188]" aria-hidden>⌕</span>
-        <input id="skill-search" type="search" value={skillQuery} onChange={(event) => setSkillQuery(event.target.value)} placeholder="Search skills..." className="form-input pl-11 pr-11" />
-        {skillQuery ? <button type="button" onClick={() => setSkillQuery("")} aria-label="Clear skill search" className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-lg text-[#718077] hover:bg-[#17251f]/5">&times;</button> : null}
+        <span className="skill-search-icon" aria-hidden="true"><SearchIcon /></span>
+        <input id="skill-search" type="search" value={skillQuery} onChange={(event) => setSkillQuery(event.target.value)} placeholder="Search skills" className="form-input skill-search-input" />
+        {skillQuery ? <button type="button" onClick={() => setSkillQuery("")} aria-label="Clear skill search" className="skill-search-clear">×</button> : null}
       </div>
 
-      {skillMessage ? <p className="mt-3 text-sm font-medium text-[#9e4639]" role="status">{skillMessage}</p> : null}
+      {skillMessage ? <p className="mt-3 text-sm font-semibold text-[#b42318]" role="status">{skillMessage}</p> : null}
 
-      <div className="mt-5 space-y-3">
+      <div className="skill-categories">
         {query ? (
           visibleCategories.length ? visibleCategories.map((category) => (
-            <div key={category.id}>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#8a958d]">{category.name}</p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{category.skills.map((skill) => renderSkillButton(skill, category.name))}</div>
-            </div>
-          )) : <div className="rounded-2xl border border-dashed border-[#17251f]/15 px-5 py-8 text-center text-sm text-[#7b887f]">No skills found. Try a broader search.</div>
+            <section key={category.id} className="skill-search-group">
+              <h3 className="skill-section-label mb-2">{category.name}</h3>
+              <div className="skill-options-grid">{category.skills.map((skill) => renderSkillButton(skill, category.name))}</div>
+            </section>
+          )) : <div className="skill-empty">No skills found. Try a broader search.</div>
         ) : skillCategories.map((category) => {
           const isExpanded = expandedCategories.includes(category.id);
+          const panelId = `skills-${category.id}`;
 
           return (
-            <div key={category.id} className="overflow-hidden rounded-2xl border border-[#17251f]/10 bg-white">
-              <button type="button" aria-expanded={isExpanded} aria-controls={`skills-${category.id}`} onClick={() => toggleCategory(category.id)} className="flex min-h-14 w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#f8faf2] sm:px-5">
-                <span className="text-sm font-semibold text-[#29392f]">{category.name}</span>
-                <span className="flex items-center gap-3 text-xs text-[#8a958d]"><span>{category.skills.length} skills</span><span className={`text-lg transition-transform ${isExpanded ? "rotate-180" : ""}`} aria-hidden>⌄</span></span>
+            <section key={category.id} className="skill-category">
+              <button type="button" aria-expanded={isExpanded} aria-controls={panelId} onClick={() => toggleCategory(category.id)} className="skill-category-toggle">
+                <span className="text-sm font-bold">{category.name}</span>
+                <span className="flex items-center gap-2 text-xs"><span>{category.skills.length}</span><ChevronIcon open={isExpanded} /></span>
               </button>
-              {isExpanded ? <div id={`skills-${category.id}`} className="border-t border-[#17251f]/10 bg-[#fcfcf8] p-3 sm:grid sm:grid-cols-2 sm:gap-2 sm:p-4">{category.skills.map((skill) => renderSkillButton(skill, category.name))}</div> : null}
-            </div>
+              {isExpanded ? <div id={panelId} className="skill-options-grid border-t border-black/10 p-2.5 sm:p-3">{category.skills.map((skill) => renderSkillButton(skill, category.name))}</div> : null}
+            </section>
           );
         })}
       </div>

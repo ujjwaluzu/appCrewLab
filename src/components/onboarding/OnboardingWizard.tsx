@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Brand } from "@/components/Brand";
 import { SkillPicker, type SelectedSkill } from "@/components/skills/SkillPicker";
+import { DroidPanel } from "@/components/visuals/DroidPanel";
 import { intents } from "@/data/intents";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -16,6 +16,7 @@ export function OnboardingWizard() {
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [touchedBasics, setTouchedBasics] = useState({ displayName: false, username: false });
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,21 +64,13 @@ export function OnboardingWizard() {
     return () => { isMounted = false; };
   }, [router]);
 
+  const isDisplayNameValid = Boolean(displayName.trim());
+  const isUsernameValid = /^[a-zA-Z0-9_]{3,24}$/.test(username.trim());
+  const canContinueFromBasics = isDisplayNameValid && isUsernameValid;
+
   function continueFromBasics() {
     setError("");
-    if (!displayName.trim()) {
-      setError("Tell us what to call you.");
-      return;
-    }
-    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username.trim())) {
-      setError("Your username should be 3-24 characters using letters, numbers, or underscores.");
-      return;
-    }
-    if (bio.length > 160) {
-      setError("Keep your bio to 160 characters or fewer.");
-      return;
-    }
-    setStep(2);
+    if (canContinueFromBasics) setStep(2);
   }
 
   async function saveBasics() {
@@ -184,22 +177,26 @@ export function OnboardingWizard() {
   if (isLoading) return <div className="flex min-h-[50vh] items-center justify-center text-sm text-[#66736b]">Checking your session...</div>;
 
   return (
-    <main className="min-h-screen bg-[#f4f5ef] px-5 py-5 text-[#17251f] sm:px-8 sm:py-8">
-      <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-[#17251f]/10 bg-[#fcfcf8] shadow-[0_24px_80px_rgba(23,37,31,0.09)] lg:min-h-[calc(100vh-4rem)] lg:flex-row">
-        <aside className="flex flex-col justify-between bg-[#17251f] p-7 text-[#f8faef] sm:p-10 lg:w-[36%]">
-          <div><Brand surface="light" /><div className="mt-16 max-w-xs sm:mt-24"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7ff70]">Your starting point</p><h1 className="mt-5 text-4xl font-semibold leading-[1] tracking-[-0.06em] sm:text-5xl">Let&apos;s make your profile feel like you.</h1><p className="mt-6 text-base leading-7 text-[#d6ded5]">A few useful details help the right projects and people find you.</p></div></div>
-          <div className="mt-12"><div className="mb-4 flex justify-between text-xs font-semibold text-[#aab8aa]"><span>Profile setup</span><span>{step} / 3</span></div><div className="flex gap-2">{[1, 2, 3].map((number) => <span key={number} className={`h-1.5 flex-1 rounded-full ${number <= step ? "bg-[#e7ff70]" : "bg-white/15"}`} />)}</div></div>
-        </aside>
+    <main className="auth-page min-h-screen px-4 py-4 text-[#17251f] sm:px-7 sm:py-7">
+      <div className="auth-frame mx-auto flex min-h-[calc(100vh-2rem)] max-w-6xl flex-col overflow-hidden rounded-[2rem] border bg-[#fcfcf8] sm:min-h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:flex-row">
+        <DroidPanel className="min-h-[25rem] lg:min-h-0 lg:w-[36%]" compact eyebrow="Your starting point" title="Let&apos;s make your profile feel like you." body="A few useful details help the right projects and people find you." />
 
-        <section className="flex flex-1 items-center px-6 py-10 sm:px-12 sm:py-14 lg:px-16"><div className="w-full max-w-xl">
-          {step === 1 ? <div className="animate-fade-in"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Step one</p><h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.055em]">The basics.</h2><p className="mt-4 text-base leading-7 text-[#59665d]">Start with the details you want people to see first.</p><div className="mt-9 space-y-5"><div><label htmlFor="display-name" className="form-label">What&apos;s your name?</label><input id="display-name" className="form-input" value={displayName} onChange={(event) => setDisplayName(event.target.value)} autoComplete="name" placeholder="Ada Lovelace" /></div><div><label htmlFor="username" className="form-label">Username</label><input id="username" className="form-input" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" placeholder="ada-builds" /><p className="mt-2 text-xs text-[#8a958d]">3-24 characters - letters, numbers, and underscores</p></div><div><label htmlFor="bio" className="form-label">Short bio <span className="font-normal text-[#8a958d]">(optional)</span></label><textarea id="bio" className="form-input min-h-28 resize-none" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} placeholder="What are you curious about?" /><p className="mt-2 text-right text-xs text-[#8a958d]">{bio.length}/160</p></div></div></div> : null}
+        <section className="onboarding-pane flex flex-1 items-center px-6 py-6 sm:px-10 sm:py-8 lg:px-14"><div className="onboarding-content w-full max-w-xl">
+          <div className="onboarding-meta mb-6">
+            <span className="onboarding-meta-label">Profile setup</span>
+            <span className="onboarding-meta-count">{step} / 3</span>
+            <div className="onboarding-meta-progress" aria-label={`Step ${step} of 3`}>
+              {[1, 2, 3].map((number) => <span key={number} className={number <= step ? "is-complete" : ""} />)}
+            </div>
+          </div>
+          {step === 1 ? <div className="animate-fade-in"><h2 className="text-4xl font-semibold leading-tight tracking-[-0.055em]">The basics.</h2><p className="mt-3 text-base leading-7 text-[#59665d]">Start with the details you want people to see first.</p><div className="mt-6 space-y-5"><div><label htmlFor="display-name" className="form-label">What&apos;s your name?</label><input id="display-name" className={`form-input ${touchedBasics.displayName && !isDisplayNameValid ? "onboarding-field-invalid" : ""}`} value={displayName} onChange={(event) => setDisplayName(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, displayName: true }))} autoComplete="name" placeholder="Ada Lovelace" aria-invalid={touchedBasics.displayName && !isDisplayNameValid} /></div><div><label htmlFor="username" className="form-label">Username</label><input id="username" className={`form-input ${touchedBasics.username && !isUsernameValid ? "onboarding-field-invalid" : ""}`} value={username} onChange={(event) => setUsername(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, username: true }))} autoComplete="username" placeholder="ada-builds" aria-invalid={touchedBasics.username && !isUsernameValid} /><p className="mt-2 text-xs text-[#8a958d]">3-24 characters - letters, numbers, and underscores</p></div><div><label htmlFor="bio" className="form-label">Short bio <span className="font-normal text-[#8a958d]">(optional)</span></label><textarea id="bio" className="form-input min-h-28 resize-none" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} placeholder="What are you curious about?" /><p className="mt-2 text-right text-xs text-[#8a958d]">{bio.length}/160</p></div></div></div> : null}
 
           {step === 2 ? <div className="animate-fade-in"><button type="button" onClick={() => setStep(1)} className="mb-8 text-sm font-semibold text-[#69766e] hover:text-[#17251f]">&larr; Back</button><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Step two</p><h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.055em]">What are you good at?</h2><p className="mt-4 text-base leading-7 text-[#59665d]">Choose the skills you want to bring to your next project.</p><div className="mt-8"><SkillPicker selectedSkills={selectedSkills} onChange={setSelectedSkills} /></div></div> : null}
 
           {step === 3 ? <div className="animate-fade-in"><button type="button" onClick={() => setStep(2)} className="mb-8 text-sm font-semibold text-[#69766e] hover:text-[#17251f]">&larr; Back</button><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Step three</p><h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.055em]">What brings you here?</h2><p className="mt-4 text-base leading-7 text-[#59665d]">Choose one or a few. Your direction can evolve.</p><div className="mt-9 space-y-3">{intents.map((intent) => { const active = selectedIntents.includes(intent.id); return <button key={intent.id} type="button" aria-pressed={active} onClick={() => setSelectedIntents((current) => active ? current.filter((value) => value !== intent.id) : [...current, intent.id])} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition ${active ? "border-[#17251f] bg-[#f0f5df]" : "border-[#17251f]/10 bg-white hover:border-[#17251f]/30"}`}><span><span className="block text-sm font-semibold text-[#29392f]">{intent.label}</span><span className="mt-1 block text-xs leading-5 text-[#7a877e]">{intent.detail}</span></span><span className={`ml-4 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs ${active ? "border-[#17251f] bg-[#17251f] text-[#e7ff70]" : "border-[#17251f]/20 text-transparent"}`} aria-hidden>✓</span></button>; })}</div></div> : null}
 
-          {error ? <p className="mt-7 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert">{error}</p> : null}
-          <div className="mt-9 flex justify-end">{step === 1 ? <button type="button" onClick={continueFromBasics} disabled={isSaving} className="primary-button">Continue <span aria-hidden>&rarr;</span></button> : null}{step === 2 ? <button type="button" onClick={continueFromSkills} disabled={isSaving} className="primary-button">{isSaving ? "Saving..." : "Continue"} <span aria-hidden>&rarr;</span></button> : null}{step === 3 ? <button type="button" onClick={finishOnboarding} disabled={isSaving} className="primary-button">{isSaving ? "Completing..." : "Finish profile"} <span aria-hidden>&rarr;</span></button> : null}</div>
+          {error && step !== 1 ? <p className="mt-7 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert">{error}</p> : null}
+          <div className="mt-9 flex justify-end">{step === 1 ? <button type="button" onClick={continueFromBasics} disabled={isSaving || !canContinueFromBasics} className="primary-button">Continue <span aria-hidden>&rarr;</span></button> : null}{step === 2 ? <button type="button" onClick={continueFromSkills} disabled={isSaving} className="primary-button">{isSaving ? "Saving..." : "Continue"} <span aria-hidden>&rarr;</span></button> : null}{step === 3 ? <button type="button" onClick={finishOnboarding} disabled={isSaving} className="primary-button">{isSaving ? "Completing..." : "Finish profile"} <span aria-hidden>&rarr;</span></button> : null}</div>
         </div></section>
       </div>
     </main>

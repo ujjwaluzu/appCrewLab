@@ -98,7 +98,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       <h1 className="text-4xl font-semibold leading-tight tracking-[-0.055em] text-[#17251f]">{isSignup ? "Make room for good work." : "Good to see you again."}</h1>
       <p className="mt-4 text-base leading-7 text-[#59665d]">{isSignup ? "Start with the basics. You can shape your profile next." : "Log in and pick up where you left off."}</p>
 
-      <form onSubmit={handleSubmit} className="mt-9 space-y-5" noValidate>
+      <form onSubmit={handleSubmit} className={isSignup ? "mt-7 space-y-4" : "mt-9 space-y-5"} noValidate>
         <div>
           <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#33433a]">Email</label>
           <input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="form-input" placeholder="you@example.com" aria-invalid={Boolean(error)} />

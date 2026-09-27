@@ -21,5 +21,57 @@ export default async function ProfilePage() {
   const displayName = profile.display_name || profile.username || "CrewLab builder";
   const completion = getProfileCompletion(profile, profile.skills.length);
 
-  return <AppShell profile={profile} active="profile"><div className="mx-auto max-w-5xl"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end"><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Your profile</p><h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] sm:text-6xl">A clear picture of what you bring.</h1></div><ProfileEditor profile={profile} /></div><section className="mt-10 rounded-3xl border border-[#17251f]/10 bg-[#fcfcf8] p-6 shadow-[0_14px_40px_rgba(23,37,31,0.05)] sm:p-9"><div className="flex flex-col gap-6 sm:flex-row sm:items-center"><Avatar name={profile.display_name} username={profile.username} size="xl" /><div><h2 className="text-3xl font-semibold tracking-[-0.05em]">{displayName}</h2><p className="mt-2 text-sm font-semibold text-[#718077]">@{profile.username || "profile"}</p><p className="mt-4 max-w-2xl text-base leading-7 text-[#59665d]">{profile.bio || "No bio yet."}</p></div></div><div className="mt-9 grid gap-8 border-t border-[#17251f]/10 pt-8 lg:grid-cols-[1fr_0.8fr]"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#738178]">Skills</p>{profile.skills.length ? <div className="mt-4 flex flex-wrap gap-2">{profile.skills.map((skill) => <span key={skill.id || skill.slug} className="rounded-full bg-[#f0f5df] px-3.5 py-2 text-sm font-semibold text-[#40513c]">{skill.name}</span>)}</div> : <p className="mt-4 text-sm leading-6 text-[#69766e]">Add your skills to help people understand what you bring to a project.</p>}</div><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#738178]">Looking for</p>{profile.intents.length ? <div className="mt-4 space-y-2">{profile.intents.map((intent) => <p key={intent} className="text-sm font-semibold text-[#4f6055]">• {getIntentLabel(intent)}</p>)}</div> : <p className="mt-4 text-sm text-[#69766e]">Nothing selected yet.</p>}</div></div></section><section className="mt-5 rounded-3xl border border-[#17251f]/10 bg-[#f0f5df] p-6 sm:p-8"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6d806c]">Profile strength</p><h2 className="mt-3 text-xl font-semibold tracking-[-0.03em] text-[#334b37]">You&apos;re {completion}% there.</h2></div><span className="text-2xl font-semibold tracking-[-0.04em] text-[#334b37]">{completion}%</span></div><div className="mt-5 h-2 overflow-hidden rounded-full bg-[#d6e1b9]"><div className="h-full rounded-full bg-[#17251f]" style={{ width: `${completion}%` }} /></div><p className="mt-4 text-sm leading-6 text-[#61745f]">A thoughtful profile helps future collaborators understand where you can make an impact.</p></section></div></AppShell>;
+  return (
+    <AppShell profile={profile} active="profile">
+      <div className="workspace-page profile-page mx-auto max-w-6xl">
+        <header className="workspace-page-heading profile-page-heading animate-fade-in">
+          <div>
+            <p className="workspace-eyebrow">Your profile / Builder card</p>
+            <h1>A clear picture of <span>what you bring.</span></h1>
+            <p className="workspace-lede">Show people what you love working on and where you want to go next.</p>
+          </div>
+          <ProfileEditor profile={profile} />
+        </header>
+
+        <section className="profile-hero-card">
+          <div className="profile-hero-stamp">CREWLAB<br />BUILDER</div>
+          <div className="profile-identity">
+            <div className="profile-avatar-frame"><Avatar name={profile.display_name} username={profile.username} size="xl" /></div>
+            <div className="profile-identity-copy">
+              <span className="profile-member-label"><span />Builder profile</span>
+              <h2>{displayName}</h2>
+              <p className="profile-username">@{profile.username || "profile"}</p>
+              <p className="profile-bio">{profile.bio || "Add a short intro so future collaborators can get to know you."}</p>
+            </div>
+          </div>
+          <div className="profile-quick-stats">
+            <div><strong>{profile.skills.length.toString().padStart(2, "0")}</strong><span>Skills</span></div>
+            <div><strong>{profile.intents.length.toString().padStart(2, "0")}</strong><span>Directions</span></div>
+            <div><strong>{completion}<small>%</small></strong><span>Complete</span></div>
+          </div>
+        </section>
+
+        <div className="profile-content-grid">
+          <section className="profile-detail-card">
+            <div className="profile-section-heading"><div><p className="workspace-eyebrow">What you bring</p><h2>Your skills</h2></div><span className="profile-section-count">{profile.skills.length}</span></div>
+            {profile.skills.length ? (
+              <div className="profile-skill-list">{profile.skills.map((skill, index) => <span key={skill.id || skill.slug} className="profile-skill-chip"><span>{String(index + 1).padStart(2, "0")}</span>{skill.name}</span>)}</div>
+            ) : <p className="profile-empty-copy">Add a few skills to help people see how you can contribute to a project.</p>}
+          </section>
+
+          <section className="profile-detail-card profile-intent-card">
+            <div className="profile-section-heading"><div><p className="workspace-eyebrow">Where you’re headed</p><h2>Looking for</h2></div><span className="profile-section-count">{profile.intents.length}</span></div>
+            {profile.intents.length ? (
+              <div className="profile-intent-list">{profile.intents.map((intent, index) => <div key={intent} className="profile-intent-row"><span>{String(index + 1).padStart(2, "0")}</span><p>{getIntentLabel(intent)}</p><b aria-hidden="true">↗</b></div>)}</div>
+            ) : <p className="profile-empty-copy">Add what you’re looking for so your next step can find you.</p>}
+          </section>
+        </div>
+
+        <section className="profile-progress-card">
+          <div className="profile-progress-copy"><p className="workspace-eyebrow">Profile strength</p><h2>{completion === 100 ? "You’re all set." : `You’re ${completion}% of the way there.`}</h2><p>{completion === 100 ? "Your builder card is ready to introduce you to the CrewLab community." : "Complete the remaining details to make your builder card more useful to collaborators."}</p></div>
+          <div className="profile-progress-visual"><strong>{completion}<small>%</small></strong><div className="profile-progress-track" role="progressbar" aria-label="Profile completion" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completion}><span style={{ width: `${completion}%` }} /></div></div>
+        </section>
+      </div>
+    </AppShell>
+  );
 }

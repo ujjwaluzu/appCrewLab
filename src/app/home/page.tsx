@@ -18,7 +18,55 @@ export default async function HomePage() {
   if (!profile) redirect("/onboarding");
 
   const name = profile.display_name || profile.username || "Builder";
+  const firstName = name.split(" ")[0];
   const completion = getProfileCompletion(profile, profile.skills.length);
 
-  return <AppShell profile={profile} active="home"><div className="mx-auto max-w-5xl"><div className="animate-fade-in"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Your workspace</p><h1 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.06em] sm:text-6xl">Good morning, {name.split(" ")[0]}.</h1><p className="mt-4 max-w-xl text-lg leading-8 text-[#59665d]">Let&apos;s build something that matters.</p></div><div className="mt-10 grid gap-5 lg:grid-cols-[1.35fr_0.65fr]"><section className="rounded-3xl bg-[#17251f] p-6 text-[#f8faef] shadow-[0_18px_45px_rgba(23,37,31,0.12)] sm:p-8"><div className="flex items-start justify-between gap-5"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b8c99a]">Your profile</p><h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em]">Make it easy for the right people to find you.</h2></div><Avatar name={profile.display_name} username={profile.username} size="lg" /></div><div className="mt-8"><div className="flex items-center justify-between text-sm"><span className="text-[#c8d2c5]">Profile strength</span><span className="font-semibold text-[#e7ff70]">{completion}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-white/15"><div className="h-full rounded-full bg-[#e7ff70] transition-all" style={{ width: `${completion}%` }} /></div><p className="mt-4 text-sm leading-6 text-[#b7c4b7]">Complete your profile to help people understand what you bring to a project.</p></div><Link href="/profile" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#e7ff70] px-5 py-3 text-sm font-semibold text-[#17251f] transition hover:-translate-y-0.5">View your profile <span aria-hidden>→</span></Link></section><section className="rounded-3xl border border-[#17251f]/10 bg-[#fcfcf8] p-6 sm:p-8"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#738178]">Coming next</p><h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em]">Projects and your crew.</h2><p className="mt-4 text-sm leading-7 text-[#69766e]">We&apos;re making space for the ideas, collaborators, and momentum that come next.</p><div className="mt-8 flex items-center gap-2 text-sm font-semibold text-[#617066]"><span className="h-2 w-2 rounded-full bg-[#b7c58b]" /> On the way</div></section></div></div></AppShell>;
+  return (
+    <AppShell profile={profile} active="home">
+      <div className="workspace-page mx-auto max-w-6xl">
+        <header className="workspace-page-heading animate-fade-in">
+          <div>
+            <p className="workspace-eyebrow">Your workspace</p>
+            <h1>Welcome back, <span>{firstName}.</span></h1>
+            <p className="workspace-lede">A little progress today can turn into something great tomorrow.</p>
+          </div>
+          <div className="workspace-heading-avatar"><Avatar name={profile.display_name} username={profile.username} size="md" /><span>Builder<br />at CrewLab</span></div>
+        </header>
+
+        <section className="home-profile-card">
+          <div className="home-card-orbit" aria-hidden="true" />
+          <div className="home-profile-main">
+            <div className="home-profile-avatar"><Avatar name={profile.display_name} username={profile.username} size="xl" /></div>
+            <div className="home-profile-copy">
+              <p className="home-card-kicker"><span />Your builder profile</p>
+              <h2>Let the right people see what you bring.</h2>
+              <p>Make your profile a clear snapshot of your skills, your interests, and what you want to build.</p>
+              <Link href="/profile" className="home-primary-link">Review your profile <span aria-hidden="true">→</span></Link>
+            </div>
+          </div>
+          <div className="home-completion">
+            <div className="home-completion-head"><span>Profile strength</span><strong>{completion}<small>%</small></strong></div>
+            <div className="home-completion-track" role="progressbar" aria-label="Profile strength" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completion}><span style={{ width: `${completion}%` }} /></div>
+            <p>{completion === 100 ? "Looking good. Your profile is ready to meet its crew." : "A few more details will help collaborators get to know you."}</p>
+          </div>
+        </section>
+
+        <div className="home-lower-grid">
+          <section className="home-next-card">
+            <div className="home-card-topline"><span className="home-index">01</span><span className="home-card-tag">Your next move</span></div>
+            <h2>Make your profile feel like you.</h2>
+            <p>Update your intro, add a skill, or tell your future collaborators what you’re looking for.</p>
+            <Link href="/profile" className="home-text-link">Edit profile <span aria-hidden="true">↗</span></Link>
+          </section>
+
+          <section className="home-coming-card">
+            <div className="home-card-topline"><span className="home-index">02</span><span className="home-card-tag">On the way</span></div>
+            <h2>Projects worth showing up for.</h2>
+            <p>We’re making room for ideas, collaborators, and the momentum that happens when they meet.</p>
+            <div className="home-coming-art" aria-hidden="true"><span /><span /><span /><b>More soon</b></div>
+          </section>
+        </div>
+      </div>
+    </AppShell>
+  );
 }
