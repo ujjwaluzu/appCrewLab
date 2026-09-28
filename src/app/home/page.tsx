@@ -6,6 +6,8 @@ import { Avatar } from "@/components/ui/Avatar";
 import { getAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProfileCompletion } from "@/lib/profile-utils";
+import { getMyCrewProjects, getProjects } from "@/lib/projects";
+import { ProjectCard } from "@/components/projects/ProjectCard";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,10 @@ export default async function HomePage() {
   const name = profile.display_name || profile.username || "Builder";
   const firstName = name.split(" ")[0];
   const completion = getProfileCompletion(profile, profile.skills.length);
+  const [ownedProjects, crewProjects] = await Promise.all([
+    getProjects({ ownerId: auth.user.id, limit: 3 }),
+    getMyCrewProjects(auth.user.id),
+  ]);
 
   return (
     <AppShell profile={profile} active="home">
@@ -51,6 +57,26 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <section className="home-projects-section">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div><p className="workspace-eyebrow">Keep building</p><h2>Your projects</h2></div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/projects" className="secondary-button">Discover projects</Link>
+              <Link href="/projects/new" className="primary-button">Create a project</Link>
+            </div>
+          </div>
+          {ownedProjects.error ? <p className="mt-5 text-sm text-[#9e4639]" role="alert">We couldn&apos;t load your projects. Please refresh to try again.</p> : ownedProjects.projects.length ? (
+            <div className="project-grid mt-5">
+              {ownedProjects.projects.map((project) => <ProjectCard key={project.id} project={project} />)}
+            </div>
+          ) : (
+            <div className="home-projects-empty">
+              <div><h3>You haven&apos;t created a project yet.</h3><p>Have an idea worth building?</p></div>
+              <Link href="/projects/new" className="home-text-link">Start your first project <span aria-hidden="true">↗</span></Link>
+            </div>
+          )}
+        </section>
+
         <div className="home-lower-grid">
           <section className="home-next-card">
             <div className="home-card-topline"><span className="home-index">01</span><span className="home-card-tag">Your next move</span></div>
@@ -60,10 +86,11 @@ export default async function HomePage() {
           </section>
 
           <section className="home-coming-card">
-            <div className="home-card-topline"><span className="home-index">02</span><span className="home-card-tag">On the way</span></div>
-            <h2>Projects worth showing up for.</h2>
-            <p>We’re making room for ideas, collaborators, and the momentum that happens when they meet.</p>
-            <div className="home-coming-art" aria-hidden="true"><span /><span /><span /><b>More soon</b></div>
+            <div className="home-card-topline"><span className="home-index">02</span><span className="home-card-tag">Building together</span></div>
+            <h2>Your crew</h2>
+            <p>Projects you&apos;re building with others.</p>
+            {crewProjects.error ? <p className="mt-4 text-sm text-[#9e4639]" role="alert">We couldn&apos;t load your crew. Please try again.</p> : crewProjects.projects.length ? <div className="mt-4 space-y-2">{crewProjects.projects.slice(0, 2).map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="home-crew-project"><span className="truncate">{project.title}</span><span>{project.crew_count}</span></Link>)}</div> : <p className="mt-4 text-sm text-[#625d53]">You haven&apos;t joined a crew yet.</p>}
+            <Link href="/my-crew" className="home-text-link">View my crew <span aria-hidden="true">â†—</span></Link>
           </section>
         </div>
       </div>

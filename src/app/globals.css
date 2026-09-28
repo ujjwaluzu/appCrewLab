@@ -280,3 +280,70 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .aiptx-droid-stage:hover .aiptx-droid-alert { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+/* Projects foundation */
+.project-filters { display: flex; align-items: center; gap: .7rem; margin: 2rem 0 1.5rem; border: 1px solid rgb(23 21 18 / 10%); border-radius: 1.1rem; background: #fcfcf8; padding: .75rem; }
+.secondary-button { display: inline-flex; min-height: 2.9rem; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgb(23 21 18 / 16%); border-radius: 999px; background: #fcfcf8; padding: .75rem 1.15rem; color: #344339; font-size: .82rem; font-weight: 750; transition: border-color 150ms ease, background 150ms ease, transform 150ms ease; }
+.secondary-button:hover { transform: translateY(-1px); border-color: rgb(23 21 18 / 34%); background: #f2efe7; }
+.project-filter-select { min-width: 12rem; }
+.project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.project-card { display: flex; min-width: 0; min-height: 14rem; flex-direction: column; border: 1px solid rgb(23 21 18 / 12%); border-radius: 1.2rem; background: #fcfcf8; padding: 1.25rem; box-shadow: 0 4px 15px rgb(23 21 18 / 3%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.project-card:hover { transform: translateY(-2px); border-color: rgb(23 21 18 / 24%); box-shadow: 0 12px 26px rgb(23 21 18 / 8%); }
+.project-card-title { color: #202e25; font-size: 1.15rem; font-weight: 750; letter-spacing: -.035em; line-height: 1.3; }
+.project-card-title:hover { text-decoration: underline; text-decoration-color: #d42a1e; text-underline-offset: 4px; }
+.project-card-description { display: -webkit-box; overflow: hidden; margin-top: .55rem; color: #69766e; font-size: .84rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.project-status { display: inline-flex; flex: 0 0 auto; align-items: center; border: 1px solid rgb(23 21 18 / 10%); border-radius: 999px; padding: .32rem .62rem; color: #39473e; font-size: .68rem; font-weight: 750; line-height: 1; }
+.project-status-idea { background: #f2efdf; }
+.project-status-building { border-color: #cadbbd; background: #eaf2df; color: #315438; }
+.project-status-paused { background: #efede8; color: #625c52; }
+.project-status-completed { border-color: #c6d9d1; background: #e5efeb; color: #31564b; }
+.project-skill-chip { display: inline-flex; align-items: center; border: 1px solid rgb(23 21 18 / 12%); border-radius: 999px; background: #f4f1e9; padding: .38rem .65rem; color: #4a554d; font-size: .72rem; font-weight: 650; }
+.project-card-owner { display: flex; align-items: center; gap: .65rem; margin-top: auto; padding-top: 1rem; color: #344339; font-size: .78rem; font-weight: 700; }
+.project-empty-state { display: flex; min-height: 18rem; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed rgb(23 21 18 / 20%); border-radius: 1.5rem; background: rgb(252 252 248 / 62%); padding: 2.5rem 1.5rem; text-align: center; }
+.project-empty-state h1,.project-empty-state h2 { color: #26362c; font-size: 1.5rem; font-weight: 750; letter-spacing: -.04em; }
+.project-empty-state p { margin-top: .55rem; color: #69766e; font-size: .9rem; line-height: 1.6; }
+.project-empty-mark { display: grid; width: 2.8rem; height: 2.8rem; place-items: center; margin-bottom: 1rem; border-radius: .9rem; background: #e7ff70; color: #17251f; font-size: 1.5rem; font-weight: 600; }
+.project-back-link { color: #657268; font-size: .84rem; font-weight: 700; }
+.project-back-link:hover { color: #17251f; }
+.project-form-card { border: 1px solid rgb(23 21 18 / 12%); border-radius: 1.5rem; background: #fcfcf8; padding: 1.25rem; box-shadow: 0 10px 30px rgb(23 21 18 / 4%); }
+.project-form-card .form-label { display: block; margin-bottom: .55rem; color: #344339; font-size: .84rem; font-weight: 750; }
+.project-owner-label { color: #6c756b; font-size: .78rem; font-weight: 650; }
+.project-detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
+.project-detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; align-items: start; gap: 3rem; }
+.project-detail-section { border-top: 1px solid rgb(23 21 18 / 12%); padding-top: 1.3rem; }
+.project-owner-card { position: sticky; top: 2rem; border: 1px solid rgb(23 21 18 / 12%); border-radius: 1.25rem; background: #fcfcf8; padding: 1.25rem; }
+.crew-member-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; }
+.crew-member-card { display: flex; min-width: 0; align-items: flex-start; gap: .8rem; border: 1px solid rgb(23 21 18 / 10%); border-radius: 1rem; background: #fcfcf8; padding: 1rem; }
+.crew-role-badge,.crew-request-count { display: inline-flex; align-items: center; border: 1px solid rgb(23 21 18 / 12%); border-radius: 99px; padding: .22rem .55rem; color: #69766e; font-size: .64rem; font-weight: 750; }
+.crew-role-owner { border-color: rgb(212 42 30 / 20%); background: rgb(212 42 30 / 6%); color: #9e4639; }
+.crew-join-control { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1.2rem; }
+.crew-request-card { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid rgb(23 21 18 / 10%); border-radius: 1rem; background: #fcfcf8; padding: 1rem; }
+.crew-small-button { min-height: 2.5rem; border-radius: 999px; background: #171512; padding: .55rem .9rem; color: #f1ede4; font-size: .75rem; font-weight: 750; }
+.crew-small-button:hover:not(:disabled) { background: #d42a1e; }
+.crew-small-button:disabled { cursor: wait; opacity: .55; }
+.crew-small-button-muted { border: 1px solid rgb(23 21 18 / 16%); background: #fcfcf8; color: #4a463f; }
+.crew-small-button-muted:hover:not(:disabled) { background: #f2efe7; color: #171512; }
+.home-crew-project { display: flex; align-items: center; justify-content: space-between; gap: .8rem; border: 1px solid rgb(23 21 18 / 12%); border-radius: .75rem; background: rgb(252 252 248 / 65%); padding: .65rem .8rem; color: #344339; font-size: .78rem; font-weight: 700; }
+.home-crew-project:hover { border-color: rgb(23 21 18 / 28%); background: #fcfcf8; }
+.home-crew-project > span:last-child { flex: 0 0 auto; color: #7a7466; font-size: .7rem; font-weight: 650; }
+.home-projects-section { margin-top: 2.5rem; border-top: 1px solid rgb(23 21 18 / 12%); padding-top: 2rem; }
+.home-projects-section h2 { margin-top: .35rem; color: #26362c; font-size: 1.7rem; font-weight: 700; letter-spacing: -.05em; }
+.home-projects-empty { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-top: 1rem; border: 1px solid rgb(23 21 18 / 12%); border-radius: 1.2rem; background: #fcfcf8; padding: 1.4rem; }
+.home-projects-empty h3 { color: #344339; font-size: 1rem; font-weight: 700; }
+.home-projects-empty p { margin-top: .3rem; color: #69766e; font-size: .84rem; }
+.project-pagination { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.5rem; color: #69766e; font-size: .8rem; font-weight: 650; }
+@media (max-width: 1023px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) {
+  .project-grid { grid-template-columns: minmax(0, 1fr); }
+  .project-filters { align-items: stretch; flex-direction: column; }
+  .project-filter-select { min-width: 0; }
+  .project-detail-header { flex-direction: column; gap: 1.2rem; }
+  .project-detail-grid { grid-template-columns: minmax(0, 1fr); gap: 1.8rem; }
+  .project-owner-card { position: static; }
+  .home-projects-empty { align-items: flex-start; flex-direction: column; }
+  .project-form-card { padding: 1rem; }
+  .project-pagination .secondary-button { min-height: 2.5rem; padding: .6rem .8rem; font-size: .72rem; }
+  .crew-member-list { grid-template-columns: minmax(0,1fr); }
+  .crew-request-card { align-items: flex-start; flex-direction: column; }
+  .crew-request-card > div:last-child { width: 100%; }
+  .crew-request-card > div:last-child button { flex: 1; }
+}

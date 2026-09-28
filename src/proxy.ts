@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseConfig } from "@/lib/supabase/config";
 
-const protectedPaths = ["/home", "/profile", "/onboarding"];
+const protectedPaths = ["/home", "/profile", "/onboarding", "/projects", "/my-crew"];
 const authPaths = ["/auth", "/auth/login", "/auth/signup"];
 
 function matchesPath(pathname: string, paths: string[]) {
@@ -63,7 +63,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(onboardingCompleted ? "/home" : "/onboarding", request.url));
   }
 
-  if ((pathname === "/home" || pathname === "/profile") && !onboardingCompleted) {
+  if ((pathname === "/home" || pathname === "/profile" || pathname.startsWith("/projects") || pathname.startsWith("/my-crew")) && !onboardingCompleted) {
     return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
@@ -75,5 +75,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/auth/:path*", "/home/:path*", "/profile/:path*", "/onboarding/:path*"],
+  matcher: ["/", "/auth/:path*", "/home/:path*", "/profile/:path*", "/onboarding/:path*", "/projects/:path*", "/my-crew/:path*"],
 };
