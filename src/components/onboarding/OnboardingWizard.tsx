@@ -64,7 +64,7 @@ export function OnboardingWizard() {
     return () => { isMounted = false; };
   }, [router]);
 
-  const isDisplayNameValid = Boolean(displayName.trim());
+  const isDisplayNameValid = displayName.trim().length >= 1 && displayName.trim().length <= 80;
   const isUsernameValid = /^[a-zA-Z0-9_]{3,24}$/.test(username.trim());
   const canContinueFromBasics = isDisplayNameValid && isUsernameValid;
 
@@ -87,7 +87,6 @@ export function OnboardingWizard() {
       display_name: displayName.trim(),
       username: username.trim().toLowerCase(),
       bio: bio.trim() || null,
-      onboarding_completed: false,
     }, { onConflict: "id" });
 
     if (saveError) {
@@ -159,7 +158,7 @@ export function OnboardingWizard() {
       const profileId = await saveBasics();
       if (!profileId || !(await persistSelectedSkills(profileId))) return;
 
-      const { error: profileError } = await createClient().from("profiles").update({ onboarding_completed: true, intents: selectedIntents }).eq("id", profileId);
+      const { error: profileError } = await createClient().rpc("complete_profile_onboarding", { selected_intents: selectedIntents });
       if (profileError) {
         setError("We could not finish your profile yet. Please try again.");
         return;
@@ -189,7 +188,7 @@ export function OnboardingWizard() {
               {[1, 2, 3].map((number) => <span key={number} className={number <= step ? "is-complete" : ""} />)}
             </div>
           </div>
-          {step === 1 ? <div className="animate-fade-in"><h2 className="text-4xl font-semibold leading-tight tracking-[-0.055em]">The basics.</h2><p className="mt-3 text-base leading-7 text-[#59665d]">Start with the details you want people to see first.</p><div className="mt-6 space-y-5"><div><label htmlFor="display-name" className="form-label">What&apos;s your name?</label><input id="display-name" className={`form-input ${touchedBasics.displayName && !isDisplayNameValid ? "onboarding-field-invalid" : ""}`} value={displayName} onChange={(event) => setDisplayName(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, displayName: true }))} autoComplete="name" placeholder="Ada Lovelace" aria-invalid={touchedBasics.displayName && !isDisplayNameValid} /></div><div><label htmlFor="username" className="form-label">Username</label><input id="username" className={`form-input ${touchedBasics.username && !isUsernameValid ? "onboarding-field-invalid" : ""}`} value={username} onChange={(event) => setUsername(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, username: true }))} autoComplete="username" placeholder="ada-builds" aria-invalid={touchedBasics.username && !isUsernameValid} /><p className="mt-2 text-xs text-[#8a958d]">3-24 characters - letters, numbers, and underscores</p></div><div><label htmlFor="bio" className="form-label">Short bio <span className="font-normal text-[#8a958d]">(optional)</span></label><textarea id="bio" className="form-input min-h-28 resize-none" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} placeholder="What are you curious about?" /><p className="mt-2 text-right text-xs text-[#8a958d]">{bio.length}/160</p></div></div></div> : null}
+          {step === 1 ? <div className="animate-fade-in"><h2 className="text-4xl font-semibold leading-tight tracking-[-0.055em]">The basics.</h2><p className="mt-3 text-base leading-7 text-[#59665d]">Start with the details you want people to see first.</p><div className="mt-6 space-y-5"><div><label htmlFor="display-name" className="form-label">What&apos;s your name?</label><input id="display-name" maxLength={80} className={`form-input ${touchedBasics.displayName && !isDisplayNameValid ? "onboarding-field-invalid" : ""}`} value={displayName} onChange={(event) => setDisplayName(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, displayName: true }))} autoComplete="name" placeholder="Ada Lovelace" aria-invalid={touchedBasics.displayName && !isDisplayNameValid} /></div><div><label htmlFor="username" className="form-label">Username</label><input id="username" maxLength={24} className={`form-input ${touchedBasics.username && !isUsernameValid ? "onboarding-field-invalid" : ""}`} value={username} onChange={(event) => setUsername(event.target.value)} onBlur={() => setTouchedBasics((current) => ({ ...current, username: true }))} autoComplete="username" placeholder="ada-builds" aria-invalid={touchedBasics.username && !isUsernameValid} /><p className="mt-2 text-xs text-[#8a958d]">3-24 characters - letters, numbers, and underscores</p></div><div><label htmlFor="bio" className="form-label">Short bio <span className="font-normal text-[#8a958d]">(optional)</span></label><textarea id="bio" className="form-input min-h-28 resize-none" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} placeholder="What are you curious about?" /><p className="mt-2 text-right text-xs text-[#8a958d]">{bio.length}/160</p></div></div></div> : null}
 
           {step === 2 ? <div className="animate-fade-in"><button type="button" onClick={() => setStep(1)} className="mb-8 text-sm font-semibold text-[#69766e] hover:text-[#17251f]">&larr; Back</button><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Step two</p><h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.055em]">What are you good at?</h2><p className="mt-4 text-base leading-7 text-[#59665d]">Choose the skills you want to bring to your next project.</p><div className="mt-8"><SkillPicker selectedSkills={selectedSkills} onChange={setSelectedSkills} /></div></div> : null}
 

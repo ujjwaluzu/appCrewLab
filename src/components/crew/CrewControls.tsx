@@ -58,24 +58,31 @@ export function JoinProjectControl({
     setError("");
     setNotice("");
     try {
-      const { data, error: insertError } = await createClient()
-        .from("join_requests")
-        .insert({
-          project_id: projectId,
-          user_id: userId,
-          motivation: motivation.trim(),
-          contribution: contribution.trim(),
-          availability,
-          additional_information: additionalInformation.trim() || null,
-        })
-        .select("id")
-        .single();
+      const { data, error: insertError } = await createClient().rpc("submit_project_join_application", {
+        target_project_id: projectId,
+        application_motivation: motivation.trim(),
+        application_contribution: contribution.trim(),
+        application_availability: availability,
+        application_additional_information: additionalInformation.trim() || null,
+      });
       setBusy(false);
-      if (insertError || !data) {
-        setError("We couldn’t send your application. Please check your connection and try again.");
+      if (insertError) {
+        if (insertError.code === "P0001" && insertError.message === "application_rate_limited") {
+          setError("You have sent several applications recently. Please wait a little before trying again.");
+          return;
+        }
+        if (insertError.code === "42501" && insertError.message === "onboarding_required") {
+          setError("Complete your profile setup before applying to projects.");
+          return;
+        }
+        setError("We could not send your application. Please check your connection and try again.");
         return;
       }
-      setCurrentRequestId(data.id);
+      if (typeof data !== "string") {
+        setError("We could not send your application. Please check your connection and try again.");
+        return;
+      }
+      setCurrentRequestId(data);
       setStatus("pending");
       setApplicationOpen(false);
       setNotice("Application sent. The project owner can now review your answers.");

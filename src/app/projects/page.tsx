@@ -10,7 +10,7 @@ import { getProjects } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { searchParams: Promise<{ q?: string; skill?: string; page?: string }> };
+type PageProps = { searchParams: Promise<{ q?: string; skill?: string; page?: string; deleted?: string }> };
 
 export default async function ProjectsPage({ searchParams }: PageProps) {
   const auth = await getAuthState();
@@ -44,6 +44,8 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
           </div>
           <Link href="/projects/new" className="primary-button shrink-0">Create a project <span aria-hidden="true">↗</span></Link>
         </header>
+
+        {params.deleted === "1" ? <p className="mb-5 rounded-xl border border-[#b7c58b]/50 bg-[#f0f5df] px-4 py-3 text-sm text-[#40513c]" role="status">Project deleted. Its crew and applications were removed too.</p> : null}
 
         <ProjectFilters query={query} skillSlug={skillSlug} />
 

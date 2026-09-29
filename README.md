@@ -25,7 +25,7 @@ Configure these in Supabase Authentication → URL Configuration:
 - Site URL: the current environment’s origin.
 - Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/auth/reset-password`, your Vercel preview origin followed by `/auth/callback` and `/auth/reset-password`, and the equivalent two paths on `https://app.crewlab.ujjwaluzu.in`.
 
-The app derives redirect origins from the current request/browser origin, so preview deployments do not fall back to production. `NEXT_PUBLIC_SITE_URL` is a local/server fallback and should match the deployment origin in each environment.
+The browser uses its current origin when requesting an auth email redirect; Supabase must allow that exact URL. The callback accepts only origins matching `NEXT_PUBLIC_SITE_URL`, Vercel's `VERCEL_URL`, or `VERCEL_PROJECT_PRODUCTION_URL`. Set `NEXT_PUBLIC_SITE_URL` to the intended origin for local, preview, and production environments when a custom domain is used. The callback ignores forwarded host and protocol headers and returns a configuration error if no trusted origin matches.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

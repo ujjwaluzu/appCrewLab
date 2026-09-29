@@ -24,6 +24,7 @@ export function ProjectForm({ project }: { project?: Project }) {
   const [skills, setSkills] = useState<SelectedSkill[]>(project?.skills.map(({ id, slug, name }) => ({ id, slug, name })) ?? []);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +63,37 @@ export function ProjectForm({ project }: { project?: Project }) {
     }
   }
 
+  async function deleteProject() {
+    if (!project || isDeleting || isSaving) return;
+    const confirmed = window.confirm(
+      "Delete this project? Its crew, applications, and project details will also be removed. This cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    setError("");
+    setIsDeleting(true);
+    try {
+      const { data, error: deleteError } = await createClient()
+        .from("projects")
+        .delete()
+        .eq("id", project.id)
+        .select("id")
+        .maybeSingle();
+
+      if (deleteError || !data) {
+        setError("We couldn’t delete this project. Please try again.");
+        return;
+      }
+
+      router.push("/projects?deleted=1");
+      router.refresh();
+    } catch {
+      setError("We couldn’t delete this project. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <form onSubmit={submit} className="project-form-card">
       <div className="space-y-6">
@@ -93,7 +125,8 @@ export function ProjectForm({ project }: { project?: Project }) {
       {error ? <p className="mt-6 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm text-[#9e4639]" role="alert">{error}</p> : null}
       <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#17251f]/10 pt-6 sm:flex-row sm:justify-end">
         <Link href={project ? `/projects/${project.id}` : "/projects"} className="secondary-button text-center">Cancel</Link>
-        <button type="submit" disabled={isSaving} className="primary-button disabled:cursor-wait disabled:opacity-70">{isSaving ? project ? "Saving..." : "Creating project..." : project ? "Save changes" : "Create project"}</button>
+        {project ? <button type="button" onClick={deleteProject} disabled={isSaving || isDeleting} className="secondary-button text-[#9e4639] hover:border-[#9e4639]/40 hover:bg-[#fff3f0] disabled:cursor-wait disabled:opacity-60">{isDeleting ? "Deleting project..." : "Delete project"}</button> : null}
+        <button type="submit" disabled={isSaving || isDeleting} className="primary-button disabled:cursor-wait disabled:opacity-70">{isSaving ? project ? "Saving..." : "Creating project..." : project ? "Save changes" : "Create project"}</button>
       </div>
     </form>
   );
