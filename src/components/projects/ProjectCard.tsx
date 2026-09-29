@@ -5,7 +5,7 @@ import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
 import type { CrewProfile } from "@/lib/crew";
 import type { Project } from "@/lib/projects";
 
-export function ProjectCard({ project, crewProfiles = [] }: { project: Project; crewProfiles?: CrewProfile[] }) {
+export function ProjectCard({ project, crewProfiles = [], showUpdatedAt = false }: { project: Project; crewProfiles?: CrewProfile[]; showUpdatedAt?: boolean }) {
   const name = project.owner?.display_name || project.owner?.username || "CrewLab builder";
 
   return (
@@ -29,6 +29,7 @@ export function ProjectCard({ project, crewProfiles = [] }: { project: Project; 
       </div>
       {crewProfiles.length ? <div className="project-card-crew-profiles" aria-label="Other crew members">{crewProfiles.slice(0, 4).map((member) => member.username ? <Link key={member.id} href={`/u/${encodeURIComponent(member.username)}`} className="project-card-crew-person" title={`View ${member.display_name}'s profile`}><Avatar name={member.display_name} username={member.username} size="sm" /><span>{member.display_name}</span></Link> : null)}{crewProfiles.length > 4 ? <span className="project-card-crew-more">+{crewProfiles.length - 4}</span> : null}</div> : null}
       <p className="project-card-crew-count">Crew: {project.crew_count}</p>
+      {showUpdatedAt ? <p className="project-card-updated">Updated {new Date(project.updated_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</p> : null}
     </article>
   );
 }

@@ -26,7 +26,7 @@ export type PendingJoinRequest = {
   user: CrewProfile;
 };
 
-async function getProfiles(ids: string[]) {
+export async function getCrewProfilesByIds(ids: string[]) {
   if (!ids.length) return { profiles: new Map<string, CrewProfile>(), error: false };
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("get_visible_project_profiles", { target_profile_ids: [...new Set(ids)] });
@@ -54,7 +54,7 @@ export async function getProfilesForProjects(projects: Project[]) {
   if (error) return { profiles: byProject, error: true };
   const projectOwners = new Map(projects.map((project) => [project.id, project.owner_id]));
   const rows = (memberships ?? []).filter((row) => row.user_id !== projectOwners.get(row.project_id));
-  const result = await getProfiles(rows.map((row) => row.user_id));
+  const result = await getCrewProfilesByIds(rows.map((row) => row.user_id));
   if (result.error) return { profiles: byProject, error: true };
   for (const row of rows) {
     const person = result.profiles.get(row.user_id);
@@ -89,7 +89,7 @@ export async function getProjectCrewData(project: Project, viewerId: string): Pr
 
   const memberRows = membersResult.data ?? [];
   const pendingRows = ownerRequestsResult.data ?? [];
-  const profilesResult = await getProfiles([project.owner_id, ...memberRows.map((member) => member.user_id), ...pendingRows.map((request) => request.user_id)]);
+  const profilesResult = await getCrewProfilesByIds([project.owner_id, ...memberRows.map((member) => member.user_id), ...pendingRows.map((request) => request.user_id)]);
   if (profilesResult.error) {
     return { members: [] as CrewMember[], requestStatus: null, requestId: null, pendingRequests: [] as PendingJoinRequest[], error: true };
   }

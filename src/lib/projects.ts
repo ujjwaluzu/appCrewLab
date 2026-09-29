@@ -44,12 +44,13 @@ function normalizeProject(row: ProjectRow, owner: ProjectOwner | null): Project 
   return { ...row, skills, owner, crew_count: 1 };
 }
 
-async function attachOwners(rows: ProjectRow[]) {
+async function attachOwners(rows: ProjectRow[], strict = false) {
   const ownerIds = [...new Set(rows.map((row) => row.owner_id))];
   if (ownerIds.length === 0) return rows.map((row) => normalizeProject(row, null));
 
   const supabase = await createClient();
-  const { data: owners } = await supabase.rpc("get_visible_project_profiles", { target_profile_ids: ownerIds });
+  const { data: owners, error } = await supabase.rpc("get_visible_project_profiles", { target_profile_ids: ownerIds });
+  if (error && strict) throw new Error("Could not load project owners");
   const ownerRows = (owners ?? []) as unknown as VisibleOwnerRow[];
   const ownerMap = new Map<string, ProjectOwner>(ownerRows.map((owner) => [owner.profile_id, {
     id: owner.profile_id,
@@ -60,15 +61,20 @@ async function attachOwners(rows: ProjectRow[]) {
   return rows.map((row) => normalizeProject(row, ownerMap.get(row.owner_id) ?? null));
 }
 
-async function attachCrewCounts(projects: Project[]) {
+async function attachCrewCounts(projects: Project[], strict = false) {
   if (!projects.length) return projects;
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("project_members")
-    .select("project_id")
+    .select("project_id, user_id")
     .in("project_id", projects.map((project) => project.id));
+  if (error && strict) throw new Error("Could not load project crew sizes");
+  const owners = new Map(projects.map((project) => [project.id, project.owner_id]));
   const counts = new Map<string, number>();
-  for (const member of data ?? []) counts.set(member.project_id, (counts.get(member.project_id) ?? 0) + 1);
+  for (const member of data ?? []) {
+    if (member.user_id === owners.get(member.project_id)) continue;
+    counts.set(member.project_id, (counts.get(member.project_id) ?? 0) + 1);
+  }
   return projects.map((project) => ({ ...project, crew_count: 1 + (counts.get(project.id) ?? 0) }));
 }
 
@@ -110,7 +116,7 @@ export async function getProjects(options: { query?: string; skillSlug?: string;
   return { projects, error: false, hasMore };
 }
 
-export async function getProjectsByIds(projectIds: string[]) {
+export async function getProjectsByIds(projectIds: string[], options: { strict?: boolean } = {}) {
   const uniqueIds = [...new Set(projectIds)];
   if (!uniqueIds.length) return { projects: [] as Project[], error: false };
   const supabase = await createClient();
@@ -121,7 +127,11 @@ export async function getProjectsByIds(projectIds: string[]) {
     .order("created_at", { ascending: false });
   if (error) return { projects: [] as Project[], error: true };
   const rows = (data ?? []) as unknown as ProjectRow[];
-  return { projects: await attachCrewCounts(await attachOwners(rows)), error: false };
+  try {
+    return { projects: await attachCrewCounts(await attachOwners(rows, options.strict), options.strict), error: false };
+  } catch {
+    return { projects: [] as Project[], error: true };
+  }
 }
 
 export async function getMyCrewProjects(userId: string) {
@@ -133,6 +143,39 @@ export async function getMyCrewProjects(userId: string) {
   if (membershipError || ownedError) return { projects: [] as Project[], error: true };
   const ids = [...new Set([...(memberships ?? []).map((row) => row.project_id), ...(ownedProjects ?? []).map((row) => row.id)])];
   return getProjectsByIds(ids);
+}
+
+export async function getDashboardOwnedProjects(userId: string, limit = 4) {
+  const supabase = await createClient();
+  const { data, error, count } = await supabase
+    .from("projects")
+    .select("id, owner_id, title, slug, short_description, description, status, created_at, updated_at, project_skills(skill:skills(id, slug, name))", { count: "exact" })
+    .eq("owner_id", userId)
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+  if (error) return { projects: [] as Project[], count: null, error: true };
+  const rows = (data ?? []) as unknown as ProjectRow[];
+  try {
+    const projects = await attachCrewCounts(await attachOwners(rows, true), true);
+    return { projects, count: count ?? 0, error: false };
+  } catch {
+    return { projects: [] as Project[], count: null, error: true };
+  }
+}
+
+export async function getDashboardCrewProjects(userId: string, limit = 3) {
+  const supabase = await createClient();
+  const { data: memberships, error } = await supabase
+    .from("project_members")
+    .select("project_id")
+    .eq("user_id", userId);
+  if (error) return { projects: [] as Project[], count: null, error: true };
+  const projectIds = [...new Set((memberships ?? []).map((row) => row.project_id))];
+  if (!projectIds.length) return { projects: [] as Project[], count: 0, error: false };
+  const result = await getProjectsByIds(projectIds, { strict: true });
+  if (result.error) return { projects: [] as Project[], count: null, error: true };
+  const projects = result.projects.filter((project) => project.owner_id !== userId);
+  return { projects: projects.slice(0, limit), count: projects.length, error: false };
 }
 
 export async function getProjectsForProfileCrew(userId: string) {
