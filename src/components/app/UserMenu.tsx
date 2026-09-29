@@ -21,10 +21,10 @@ export function UserMenu({ name, username }: { name: string; username: string | 
 
   return (
     <div className="relative">
-      <button type="button" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-haspopup="menu" className="flex items-center gap-3 rounded-full p-1.5 pr-3 text-left transition hover:bg-[#f4f5ef]">
+      <button type="button" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-haspopup="menu" className="workspace-user-menu-trigger">
         <Avatar name={name} username={username} size="sm" />
-        <span className="hidden min-w-0 sm:block"><span className="block max-w-32 truncate text-sm font-semibold text-[#25362d]">{name || username || "Your profile"}</span><span className="block max-w-32 truncate text-xs text-[#879188]">@{username || "profile"}</span></span>
-        <span className="text-xs text-[#78867c]" aria-hidden>⌄</span>
+        <span className="workspace-user-menu-copy hidden min-w-0 sm:block"><span className="workspace-user-menu-name">{name || username || "Your profile"}</span><span className="workspace-user-menu-handle">@{username || "profile"}</span></span>
+        <span className="workspace-user-menu-chevron" aria-hidden>⌄</span>
       </button>
 
       {open ? <div className="absolute right-0 z-20 mt-2 w-60 rounded-2xl border border-[#17251f]/10 bg-[#fcfcf8] p-2 shadow-[0_18px_45px_rgba(23,37,31,0.14)]" role="menu">

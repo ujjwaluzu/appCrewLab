@@ -24,6 +24,11 @@ export type PendingJoinRequest = {
   additional_information: string | null;
   application_legacy: boolean;
   user: CrewProfile;
+  project?: { id: string; title: string };
+};
+
+export type PendingOwnerApplication = PendingJoinRequest & {
+  project: { id: string; title: string };
 };
 
 export async function getCrewProfilesByIds(ids: string[]) {
@@ -41,6 +46,54 @@ export async function getCrewProfilesByIds(ids: string[]) {
     if (row.skill_id) profile.skills.push({ id: row.skill_id, slug: row.skill_slug, name: row.skill_name });
   }
   return { profiles, error: false };
+}
+
+export async function getPendingOwnerApplications(userId: string): Promise<{ requests: PendingOwnerApplication[]; count: number | null; error: boolean }> {
+  try {
+    const supabase = await createClient();
+    const { data, count, error } = await supabase
+      .from("join_requests")
+      .select("id, project_id, user_id, created_at, motivation, contribution, availability, additional_information, application_legacy, project:projects!inner(id, title, owner_id)", { count: "exact" })
+      .eq("project.owner_id", userId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) return { requests: [], count: null, error: true };
+
+    const rows = (data ?? []) as unknown as Array<{
+      id: string;
+      project_id: string;
+      user_id: string;
+      created_at: string;
+      motivation: string | null;
+      contribution: string | null;
+      availability: string | null;
+      additional_information: string | null;
+      application_legacy: boolean;
+      project: { id: string; title: string; owner_id: string } | Array<{ id: string; title: string; owner_id: string }>;
+    }>;
+    const profiles = await getCrewProfilesByIds(rows.map((row) => row.user_id));
+    if (profiles.error) return { requests: [], count: count ?? 0, error: true };
+
+    const requests: PendingOwnerApplication[] = rows.flatMap((row) => {
+      const project = Array.isArray(row.project) ? row.project[0] : row.project;
+      if (!project || project.owner_id !== userId) return [];
+      return [{
+        id: row.id,
+        created_at: row.created_at,
+        motivation: row.motivation,
+        contribution: row.contribution,
+        availability: row.availability,
+        additional_information: row.additional_information,
+        application_legacy: row.application_legacy,
+        user: profiles.profiles.get(row.user_id) ?? { id: row.user_id, display_name: "CrewLab builder", username: null, skills: [] },
+        project: { id: project.id, title: project.title },
+      }];
+    });
+    return { requests, count: count ?? 0, error: false };
+  } catch {
+    return { requests: [], count: null, error: true };
+  }
 }
 
 export async function getProfilesForProjects(projects: Project[]) {

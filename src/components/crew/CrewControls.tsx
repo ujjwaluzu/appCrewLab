@@ -204,7 +204,7 @@ export function JoinProjectControl({
   </div>;
 }
 
-export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[] }) {
+export function OwnerJoinRequests({ requests, showReviewLabel = false }: { requests: PendingJoinRequest[]; showReviewLabel?: boolean }) {
   const router = useRouter();
   const [busyAction, setBusyAction] = useState<{ id: string; action: "accept" | "decline" } | null>(null);
   const [message, setMessage] = useState("");
@@ -242,9 +242,10 @@ export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[]
               {request.user.username ? <Link href={`/u/${encodeURIComponent(request.user.username)}`} aria-label={`View ${name}'s profile`}><Avatar name={name} username={request.user.username} size="md" /></Link> : <Avatar name={name} size="md" />}
               <div className="min-w-0"><p className="truncate font-semibold text-[#26362c]">{request.user.username ? <Link href={`/u/${encodeURIComponent(request.user.username)}`} className="crew-profile-link">{name}</Link> : name}</p><p className="truncate text-sm text-[#7a7466]">{request.user.username ? <Link href={`/u/${encodeURIComponent(request.user.username)}`} className="crew-profile-link">@{request.user.username}</Link> : "@builder"}</p>
                 {request.user.skills.length ? <div className="mt-2 flex flex-wrap gap-1.5">{request.user.skills.slice(0, 3).map((skill) => <span className="project-skill-chip" key={skill.id}>{skill.name}</span>)}</div> : null}
+                {request.project ? <p className="crew-request-project">For <Link href={`/projects/${request.project.id}`} className="crew-profile-link">{request.project.title}</Link></p> : null}
               </div>
             </div>
-            <button type="button" className="crew-preview-icon-button" aria-label={`Preview application from ${name}`} title="Preview application" onClick={(event) => { reviewTriggerRef.current = event.currentTarget; setPreviewRequest(request); setMessage(""); }}>
+            <button type="button" className={`crew-preview-icon-button ${showReviewLabel ? "crew-preview-label-button" : ""}`} aria-label={`Review application from ${name}`} title="Review application" onClick={(event) => { reviewTriggerRef.current = event.currentTarget; setPreviewRequest(request); setMessage(""); }}>
               <span className="crew-review-icon" aria-hidden="true">▤</span>
             </button>
           </article>

@@ -25,6 +25,8 @@ export type HomeDashboardData = {
   outgoing: { items: OutgoingApplicationPreview[]; count: number | null; error: boolean };
 };
 
+export type ApplicationDashboardData = Pick<HomeDashboardData, "incoming" | "outgoing">;
+
 async function getIncomingApplications(userId: string): Promise<HomeDashboardData["incoming"]> {
   try {
     const supabase = await createClient();
@@ -70,7 +72,7 @@ async function getIncomingApplications(userId: string): Promise<HomeDashboardDat
   }
 }
 
-async function getOutgoingApplications(userId: string): Promise<HomeDashboardData["outgoing"]> {
+export async function getOutgoingApplications(userId: string): Promise<HomeDashboardData["outgoing"]> {
   try {
     const supabase = await createClient();
     const { data, count, error } = await supabase
@@ -96,11 +98,19 @@ async function getOutgoingApplications(userId: string): Promise<HomeDashboardDat
   }
 }
 
+export async function getApplicationsDashboardData(userId: string): Promise<ApplicationDashboardData> {
+  const [incoming, outgoing] = await Promise.all([
+    getIncomingApplications(userId),
+    getOutgoingApplications(userId),
+  ]);
+  return { incoming, outgoing };
+}
+
 export async function getHomeDashboardData(userId: string): Promise<HomeDashboardData> {
-  const [projects, crew, incoming, outgoing] = await Promise.all([
+  const [projects, crew, applications] = await Promise.all([
     (async () => {
       try {
-        const result = await getDashboardOwnedProjects(userId, 4);
+        const result = await getDashboardOwnedProjects(userId, 3);
         return { items: result.projects, count: result.count, error: result.error };
       } catch {
         return { items: [], count: null, error: true };
@@ -114,8 +124,7 @@ export async function getHomeDashboardData(userId: string): Promise<HomeDashboar
         return { items: [], count: null, error: true };
       }
     })(),
-    getIncomingApplications(userId),
-    getOutgoingApplications(userId),
+    getApplicationsDashboardData(userId),
   ]);
-  return { projects, crew, incoming, outgoing };
+  return { projects, crew, ...applications };
 }
