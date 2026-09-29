@@ -20,6 +20,8 @@ export function OnboardingWizard() {
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -29,32 +31,50 @@ export function OnboardingWizard() {
     async function loadProfile() {
       try {
         const supabase = createClient();
-        const { data: userResult } = await supabase.auth.getUser();
+        const { data: userResult, error: authError } = await supabase.auth.getUser();
+
+        if (authError) {
+          if (isMounted) setLoadError("We could not verify your session. Please try again.");
+          return;
+        }
 
         if (!userResult.user) {
           router.replace("/auth");
           return;
         }
 
-        const [{ data: profile }, { data: profileSkillRows }] = await Promise.all([
+        const [profileResult, profileSkillsResult] = await Promise.all([
           supabase.from("profiles").select("display_name, username, bio, intents").eq("id", userResult.user.id).maybeSingle(),
           supabase.from("profile_skills").select("skill_id").eq("profile_id", userResult.user.id),
         ]);
+        if (profileResult.error || profileSkillsResult.error) {
+          if (isMounted) setLoadError("We could not load your saved profile details. Please try again.");
+          return;
+        }
+
+        const profile = profileResult.data;
+        const profileSkillRows = profileSkillsResult.data;
 
         const savedSkillIds = (profileSkillRows ?? []).map((row) => row.skill_id).filter(Boolean);
-        const { data: savedSkills } = savedSkillIds.length
+        const { data: savedSkills, error: savedSkillsError } = savedSkillIds.length
           ? await supabase.from("skills").select("id, slug, name").in("id", savedSkillIds)
-          : { data: [] };
+          : { data: [], error: null };
+
+        if (savedSkillsError) {
+          if (isMounted) setLoadError("We could not load your saved skills. Please try again.");
+          return;
+        }
 
         if (!isMounted) return;
 
+        setLoadError("");
         setDisplayName(profile?.display_name ?? "");
         setUsername(profile?.username ?? "");
         setBio(profile?.bio ?? "");
         setSelectedIntents(profile?.intents ?? []);
         setSelectedSkills((savedSkills ?? []).map((skill) => ({ id: skill.id, slug: skill.slug, name: skill.name })));
       } catch {
-        if (isMounted) setError("We could not load your profile. Please refresh and try again.");
+        if (isMounted) setLoadError("We could not load your profile. Please try again.");
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -62,7 +82,7 @@ export function OnboardingWizard() {
 
     void loadProfile();
     return () => { isMounted = false; };
-  }, [router]);
+  }, [router, loadAttempt]);
 
   const isDisplayNameValid = displayName.trim().length >= 1 && displayName.trim().length <= 80;
   const isUsernameValid = /^[a-zA-Z0-9_]{3,24}$/.test(username.trim());
@@ -194,8 +214,9 @@ export function OnboardingWizard() {
 
           {step === 3 ? <div className="animate-fade-in"><button type="button" onClick={() => setStep(2)} className="mb-8 text-sm font-semibold text-[#69766e] hover:text-[#17251f]">&larr; Back</button><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#738178]">Step three</p><h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.055em]">What brings you here?</h2><p className="mt-4 text-base leading-7 text-[#59665d]">Choose one or a few. Your direction can evolve.</p><div className="mt-9 space-y-3">{intents.map((intent) => { const active = selectedIntents.includes(intent.id); return <button key={intent.id} type="button" aria-pressed={active} onClick={() => setSelectedIntents((current) => active ? current.filter((value) => value !== intent.id) : [...current, intent.id])} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition ${active ? "border-[#17251f] bg-[#f0f5df]" : "border-[#17251f]/10 bg-white hover:border-[#17251f]/30"}`}><span><span className="block text-sm font-semibold text-[#29392f]">{intent.label}</span><span className="mt-1 block text-xs leading-5 text-[#7a877e]">{intent.detail}</span></span><span className={`ml-4 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs ${active ? "border-[#17251f] bg-[#17251f] text-[#e7ff70]" : "border-[#17251f]/20 text-transparent"}`} aria-hidden>✓</span></button>; })}</div></div> : null}
 
-          {error && step !== 1 ? <p className="mt-7 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert">{error}</p> : null}
-          <div className="mt-9 flex justify-end">{step === 1 ? <button type="button" onClick={continueFromBasics} disabled={isSaving || !canContinueFromBasics} className="primary-button">Continue <span aria-hidden>&rarr;</span></button> : null}{step === 2 ? <button type="button" onClick={continueFromSkills} disabled={isSaving} className="primary-button">{isSaving ? "Saving..." : "Continue"} <span aria-hidden>&rarr;</span></button> : null}{step === 3 ? <button type="button" onClick={finishOnboarding} disabled={isSaving} className="primary-button">{isSaving ? "Completing..." : "Finish profile"} <span aria-hidden>&rarr;</span></button> : null}</div>
+          {loadError ? <div className="mt-6 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert"><p>{loadError}</p><button type="button" className="mt-2 font-semibold underline underline-offset-2" onClick={() => { setIsLoading(true); setLoadAttempt((current) => current + 1); }}>Try again</button></div> : null}
+          {error ? <p className="mt-7 rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert">{error}</p> : null}
+          <div className="mt-9 flex justify-end">{step === 1 ? <button type="button" onClick={continueFromBasics} disabled={isSaving || Boolean(loadError) || !canContinueFromBasics} className="primary-button">Continue <span aria-hidden>&rarr;</span></button> : null}{step === 2 ? <button type="button" onClick={continueFromSkills} disabled={isSaving || Boolean(loadError)} className="primary-button">{isSaving ? "Saving..." : "Continue"} <span aria-hidden>&rarr;</span></button> : null}{step === 3 ? <button type="button" onClick={finishOnboarding} disabled={isSaving || Boolean(loadError)} className="primary-button">{isSaving ? "Completing..." : "Finish profile"} <span aria-hidden>&rarr;</span></button> : null}</div>
         </div></section>
       </div>
     </main>

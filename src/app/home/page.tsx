@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/AppShell";
 import { Avatar } from "@/components/ui/Avatar";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getHomeDashboardData } from "@/lib/dashboard";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProfileCompletion } from "@/lib/profile-utils";
@@ -30,12 +30,10 @@ function formatDashboardDate(value: string) {
 }
 
 export default async function HomePage() {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
 
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
 
   const name = profile.display_name || profile.username || "Builder";
   const firstName = name.trim().split(/\s+/)[0] || "Builder";
@@ -47,13 +45,12 @@ export default async function HomePage() {
   return (
     <AppShell profile={profile} active="home">
       <div className="workspace-page mx-auto max-w-6xl">
-        <header className="workspace-page-heading animate-fade-in">
+        <header className="workspace-page-heading home-page-heading animate-fade-in">
           <div>
             <p className="workspace-eyebrow">Your workspace</p>
             <h1>Welcome back, <span>{firstName}.</span></h1>
             <p className="workspace-lede">A little progress today can turn into something great tomorrow.</p>
           </div>
-          <div className="workspace-heading-avatar"><Avatar name={profile.display_name} username={profile.username} size="md" /><span>Builder<br />at CrewLab</span></div>
         </header>
 
         <nav className="home-quick-actions" aria-label="Quick actions">

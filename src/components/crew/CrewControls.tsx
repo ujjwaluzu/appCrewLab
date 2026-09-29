@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { FormEvent, ReactNode } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import type { FormEvent, MouseEvent, ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,40 @@ import { Avatar } from "@/components/ui/Avatar";
 import type { JoinRequestStatus, PendingJoinRequest } from "@/lib/crew";
 import { createClient } from "@/lib/supabase/browser";
 
-function ActionButton({ children, onClick, disabled, subtle = false }: { children: ReactNode; onClick: () => void; disabled?: boolean; subtle?: boolean }) {
+function useModalDialog(open: boolean, triggerRef: { current: HTMLElement | null }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!open || !dialog) return;
+
+    const opener = triggerRef.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    if (!dialog.open) dialog.showModal();
+    const initialFocus = dialog.querySelector<HTMLElement>("[autofocus]")
+      ?? dialog.querySelector<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled)");
+    initialFocus?.focus();
+
+    return () => {
+      // Closing the native modal restores focus to the control that opened it.
+      if (dialog.open) dialog.close();
+      opener?.focus();
+      triggerRef.current = null;
+    };
+  }, [open, triggerRef]);
+
+  return dialogRef;
+}
+
+function closeOnDialogBackdrop(event: MouseEvent<HTMLDialogElement>, close: () => void) {
+  if (event.target !== event.currentTarget) return;
+  const bounds = event.currentTarget.getBoundingClientRect();
+  if (
+    event.clientX < bounds.left || event.clientX > bounds.right
+    || event.clientY < bounds.top || event.clientY > bounds.bottom
+  ) close();
+}
+
+function ActionButton({ children, onClick, disabled, subtle = false }: { children: ReactNode; onClick: (event: MouseEvent<HTMLButtonElement>) => void; disabled?: boolean; subtle?: boolean }) {
   return <button type="button" onClick={onClick} disabled={disabled} className={`${subtle ? "secondary-button" : "primary-button"} disabled:cursor-not-allowed disabled:opacity-50`}>{children}</button>;
 }
 
@@ -40,6 +73,8 @@ export function JoinProjectControl({
   const [contribution, setContribution] = useState("");
   const [availability, setAvailability] = useState("");
   const [additionalInformation, setAdditionalInformation] = useState("");
+  const applicationTriggerRef = useRef<HTMLElement | null>(null);
+  const applicationDialogRef = useModalDialog(applicationOpen, applicationTriggerRef);
 
   if (isOwner) return null;
 
@@ -143,19 +178,18 @@ export function JoinProjectControl({
   } else if (status === "pending") {
     content = <><p className="font-semibold text-[#26362c]">Request pending</p><ActionButton subtle disabled={busy} onClick={cancelRequest}>{busy ? "Cancelling..." : "Cancel request"}</ActionButton></>;
   } else if (status === "rejected") {
-    content = <><p className="font-semibold text-[#8d493e]">Request declined</p>{crewCount >= 10 ? <p className="text-sm text-[#69766e]">This crew is full.</p> : <ActionButton disabled={busy} onClick={() => { setError(""); setNotice(""); setApplicationOpen(true); }}>Submit a new application</ActionButton>}</>;
+    content = <><p className="font-semibold text-[#8d493e]">Request declined</p>{crewCount >= 10 ? <p className="text-sm text-[#69766e]">This crew is full.</p> : <ActionButton disabled={busy} onClick={(event) => { applicationTriggerRef.current = event.currentTarget; setError(""); setNotice(""); setApplicationOpen(true); }}>Submit a new application</ActionButton>}</>;
   } else if (crewCount >= 10) {
     content = <p className="font-semibold text-[#69766e]">This crew is full.</p>;
   } else {
-    content = <><p className="font-semibold text-[#26362c]">Interested in building this?</p><ActionButton disabled={busy} onClick={() => { setError(""); setNotice(""); setApplicationOpen(true); }}>Request to join</ActionButton></>;
+    content = <><p className="font-semibold text-[#26362c]">Interested in building this?</p><ActionButton disabled={busy} onClick={(event) => { applicationTriggerRef.current = event.currentTarget; setError(""); setNotice(""); setApplicationOpen(true); }}>Request to join</ActionButton></>;
   }
 
   return <div className="crew-join-control">
     {content}
     {notice ? <p className="text-sm text-[#4d6754]" role="status">{notice}</p> : null}
     {error && !applicationOpen ? <p className="text-sm text-[#9e4639]" role="alert">{error}</p> : null}
-    {applicationOpen ? <div className="crew-application-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setApplicationOpen(false); }}>
-      <section className="crew-application-dialog" role="dialog" aria-modal="true" aria-labelledby="crew-application-title" aria-describedby="crew-application-note" onKeyDown={(event) => { if (event.key === "Escape" && !busy) setApplicationOpen(false); }}>
+    {applicationOpen ? <dialog ref={applicationDialogRef} className="crew-application-dialog" aria-labelledby="crew-application-title" aria-describedby="crew-application-note" onCancel={(event) => { event.preventDefault(); if (!busy) setApplicationOpen(false); }} onClick={(event) => { if (!busy) closeOnDialogBackdrop(event, () => setApplicationOpen(false)); }}>
         <div className="flex items-start justify-between gap-4"><div><p className="workspace-eyebrow">Join request</p><h3 id="crew-application-title" className="mt-2 text-2xl font-semibold tracking-[-0.045em] text-[#26362c]">Apply to join this crew</h3></div><button type="button" className="crew-dialog-close" aria-label="Close application" onClick={() => setApplicationOpen(false)} disabled={busy}>×</button></div>
         <p id="crew-application-note" className="mt-3 text-sm leading-6 text-[#69766e]">Your application will be visible to the project owner. You&apos;ll become a crew member only if they accept.</p>
         <form className="mt-5 space-y-4" onSubmit={submitRequest} noValidate>
@@ -166,8 +200,7 @@ export function JoinProjectControl({
           {error ? <p className="text-sm text-[#9e4639]" role="alert">{error}</p> : null}
           <div className="flex flex-col-reverse gap-2 border-t border-[#17251f]/10 pt-4 sm:flex-row sm:justify-end"><button type="button" className="secondary-button" onClick={() => setApplicationOpen(false)} disabled={busy}>Cancel</button><button type="submit" className="primary-button" disabled={busy}>{busy ? "Sending application..." : "Send application"}</button></div>
         </form>
-      </section>
-    </div> : null}
+    </dialog> : null}
   </div>;
 }
 
@@ -176,6 +209,8 @@ export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[]
   const [busyAction, setBusyAction] = useState<{ id: string; action: "accept" | "decline" } | null>(null);
   const [message, setMessage] = useState("");
   const [previewRequest, setPreviewRequest] = useState<PendingJoinRequest | null>(null);
+  const reviewTriggerRef = useRef<HTMLElement | null>(null);
+  const reviewDialogRef = useModalDialog(Boolean(previewRequest), reviewTriggerRef);
 
   async function decide(requestId: string, action: "accept" | "decline") {
     setBusyAction({ id: requestId, action });
@@ -209,7 +244,7 @@ export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[]
                 {request.user.skills.length ? <div className="mt-2 flex flex-wrap gap-1.5">{request.user.skills.slice(0, 3).map((skill) => <span className="project-skill-chip" key={skill.id}>{skill.name}</span>)}</div> : null}
               </div>
             </div>
-            <button type="button" className="crew-preview-icon-button" aria-label={`Preview application from ${name}`} title="Preview application" onClick={() => { setPreviewRequest(request); setMessage(""); }}>
+            <button type="button" className="crew-preview-icon-button" aria-label={`Preview application from ${name}`} title="Preview application" onClick={(event) => { reviewTriggerRef.current = event.currentTarget; setPreviewRequest(request); setMessage(""); }}>
               <span className="crew-review-icon" aria-hidden="true">▤</span>
             </button>
           </article>
@@ -219,8 +254,8 @@ export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[]
       {previewRequest ? (() => {
         const name = previewRequest.user.display_name || previewRequest.user.username || "CrewLab builder";
         const action = busyAction?.id === previewRequest.id ? busyAction.action : null;
-        return <div className="crew-review-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !action) setPreviewRequest(null); }}>
-          <section className="crew-review-dialog" role="dialog" aria-modal="true" aria-labelledby="crew-review-title" onKeyDown={(event) => { if (event.key === "Escape" && !action) setPreviewRequest(null); }}>
+        return <dialog ref={reviewDialogRef} className="crew-review-dialog" aria-labelledby="crew-review-title" aria-describedby="crew-review-description" onCancel={(event) => { event.preventDefault(); if (!action) setPreviewRequest(null); }} onClick={(event) => { if (!action) closeOnDialogBackdrop(event, () => setPreviewRequest(null)); }}>
+            <p id="crew-review-description" className="sr-only">Review the application, then accept or decline the request.</p>
             <header className="crew-review-dialog-header">
               <div className="flex min-w-0 items-center gap-3">{previewRequest.user.username ? <Link href={`/u/${encodeURIComponent(previewRequest.user.username)}`} aria-label={`View ${name}'s profile`}><Avatar name={name} username={previewRequest.user.username} size="md" /></Link> : <Avatar name={name} size="md" />}<div className="min-w-0"><p className="workspace-eyebrow">Join request</p><h3 id="crew-review-title" className="truncate text-xl font-semibold tracking-[-0.04em] text-[#26362c]">{previewRequest.user.username ? <Link href={`/u/${encodeURIComponent(previewRequest.user.username)}`} className="crew-profile-link">{name}</Link> : name}&apos;s application</h3><p className="truncate text-sm text-[#7a7466]">{previewRequest.user.username ? <Link href={`/u/${encodeURIComponent(previewRequest.user.username)}`} className="crew-profile-link">@{previewRequest.user.username}</Link> : "@builder"}</p></div></div>
               <button type="button" className="crew-dialog-close" aria-label="Close application preview" onClick={() => setPreviewRequest(null)} disabled={Boolean(action)} autoFocus>×</button>
@@ -236,8 +271,7 @@ export function OwnerJoinRequests({ requests }: { requests: PendingJoinRequest[]
             </div>
             {message ? <p role="alert" className="mt-4 text-sm text-[#9e4639]">{message}</p> : null}
             <footer className="crew-review-dialog-actions"><button type="button" className="crew-small-button crew-small-button-muted" onClick={() => void decide(previewRequest.id, "decline")} disabled={Boolean(action)}>{action === "decline" ? "Declining..." : "Decline"}</button><button type="button" className="crew-small-button crew-small-button-accept" onClick={() => void decide(previewRequest.id, "accept")} disabled={Boolean(action)}>{action === "accept" ? "Accepting..." : "Accept"}</button></footer>
-          </section>
-        </div>;
+        </dialog>;
       })() : null}
     </div>
   );

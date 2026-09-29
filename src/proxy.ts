@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import type { User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseConfig } from "@/lib/supabase/config";
@@ -35,8 +36,16 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
-  const user = data.user;
+  let user: User | null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    // Proxy is an optimistic gate. A failed check must be resolved again by
+    // the protected Server Component, not converted into an auth redirect.
+    if (error) return response;
+    user = data.user;
+  } catch {
+    return response;
+  }
   const isProtected = matchesPath(pathname, protectedPaths);
   const isAuthRoute = authPaths.includes(pathname);
 
@@ -48,11 +57,18 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("onboarding_completed")
-    .eq("id", user.id)
-    .maybeSingle();
+  let profile: { onboarding_completed: boolean } | null;
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (error) return response;
+    profile = data;
+  } catch {
+    return response;
+  }
   const onboardingCompleted = profile?.onboarding_completed === true;
 
   if (pathname === "/") {

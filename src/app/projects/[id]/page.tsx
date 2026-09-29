@@ -8,7 +8,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { CrewSection } from "@/components/crew/CrewSection";
 import { JoinProjectControl, OwnerJoinRequests } from "@/components/crew/CrewControls";
 import { getProjectCrewData } from "@/lib/crew";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProjectById } from "@/lib/projects";
 
@@ -27,11 +27,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
   const { id } = await params;
   const result = await getProjectById(id);
   if (!result.project && !result.error) notFound();

@@ -6,7 +6,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Avatar } from "@/components/ui/Avatar";
 import { getIntentLabel } from "@/data/intents";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getProjects, getProjectsForProfileCrew } from "@/lib/projects";
 import { getCurrentUserProfile, getPublicProfileByUsername } from "@/lib/profile";
 
@@ -26,11 +26,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PublicProfilePage({ params }: PageProps) {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const viewer = await getCurrentUserProfile();
-  if (!viewer) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const viewer = await getCurrentUserProfile(auth.user.id);
 
   const { username } = await params;
   const result = await getPublicProfileByUsername(username);

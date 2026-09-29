@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/AppShell";
 import { ProjectForm } from "@/components/projects/ProjectForm";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProjectById } from "@/lib/projects";
 
@@ -12,11 +12,9 @@ export const dynamic = "force-dynamic";
 type PageProps = { params: Promise<{ id: string }> };
 
 export default async function EditProjectPage({ params }: PageProps) {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
   const { id } = await params;
   const result = await getProjectById(id);
   if (!result.project && !result.error) notFound();

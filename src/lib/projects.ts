@@ -141,7 +141,21 @@ export async function getMyCrewProjects(userId: string) {
     supabase.from("projects").select("id").eq("owner_id", userId),
   ]);
   if (membershipError || ownedError) return { projects: [] as Project[], error: true };
-  const ids = [...new Set([...(memberships ?? []).map((row) => row.project_id), ...(ownedProjects ?? []).map((row) => row.id)])];
+
+  const ownedIds = (ownedProjects ?? []).map((project) => project.id);
+  const ownedProjectsWithCrew = ownedIds.length
+    ? await supabase
+      .from("project_members")
+      .select("project_id")
+      .in("project_id", ownedIds)
+      .neq("user_id", userId)
+    : { data: [], error: null };
+  if (ownedProjectsWithCrew.error) return { projects: [] as Project[], error: true };
+
+  const ids = [...new Set([
+    ...(memberships ?? []).map((row) => row.project_id),
+    ...(ownedProjectsWithCrew.data ?? []).map((row) => row.project_id),
+  ])];
   return getProjectsByIds(ids);
 }
 

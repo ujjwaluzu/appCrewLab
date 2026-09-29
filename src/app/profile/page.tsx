@@ -4,19 +4,17 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { Avatar } from "@/components/ui/Avatar";
 import { getIntentLabel } from "@/data/intents";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProfileCompletion } from "@/lib/profile-utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
 
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
 
   const displayName = profile.display_name || profile.username || "CrewLab builder";
   const completion = getProfileCompletion(profile, profile.skills.length);

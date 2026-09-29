@@ -56,34 +56,32 @@ export async function getPublicProfileByUsername(username: string): Promise<{ pr
   };
 }
 
-export async function getCurrentUserProfile(): Promise<UserProfile | null> {
+export async function getCurrentUserProfile(userId: string): Promise<UserProfile> {
   const supabase = await createClient();
-  const { data: userResult } = await supabase.auth.getUser();
-  const user = userResult.user;
-
-  if (!user) return null;
-
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("id, username, display_name, bio, intents, onboarding_completed, created_at, updated_at")
-    .eq("id", user.id)
+    .eq("id", userId)
     .maybeSingle();
 
-  if (!profile) return null;
+  if (profileError || !profile) throw new Error("CrewLab could not load your profile. Please try again.");
 
-  const { data: profileSkillRows } = await supabase
+  const { data: profileSkillRows, error: profileSkillsError } = await supabase
     .from("profile_skills")
     .select("skill_id")
-    .eq("profile_id", user.id);
+    .eq("profile_id", userId);
+
+  if (profileSkillsError) throw new Error("CrewLab could not load your profile. Please try again.");
 
   const skillIds = (profileSkillRows ?? []).map((row) => row.skill_id).filter(Boolean);
   let skills: ProfileSkill[] = [];
 
   if (skillIds.length) {
-    const { data: skillRows } = await supabase
+    const { data: skillRows, error: skillsError } = await supabase
       .from("skills")
       .select("id, slug, name")
       .in("id", skillIds);
+    if (skillsError) throw new Error("CrewLab could not load your profile. Please try again.");
     skills = skillRows ?? [];
   }
 

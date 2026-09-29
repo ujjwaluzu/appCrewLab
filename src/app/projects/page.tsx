@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { ProjectFilters } from "@/components/projects/ProjectFilters";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getProjects } from "@/lib/projects";
 
@@ -13,11 +13,9 @@ export const dynamic = "force-dynamic";
 type PageProps = { searchParams: Promise<{ q?: string; skill?: string; page?: string; deleted?: string }> };
 
 export default async function ProjectsPage({ searchParams }: PageProps) {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
 
   const params = await searchParams;
   const query = typeof params.q === "string" ? params.q.slice(0, 80) : "";
@@ -36,7 +34,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
   return (
     <AppShell profile={profile} active="projects">
       <div className="workspace-page mx-auto max-w-6xl">
-        <header className="workspace-page-heading animate-fade-in">
+        <header className="workspace-page-heading projects-page-heading animate-fade-in">
           <div>
             <p className="workspace-eyebrow">Made on CrewLab</p>
             <h1>Projects <span>worth building.</span></h1>

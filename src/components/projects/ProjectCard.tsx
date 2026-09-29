@@ -18,18 +18,22 @@ export function ProjectCard({ project, crewProfiles = [], showUpdatedAt = false 
         <ProjectStatusBadge status={project.status} />
       </div>
       {project.skills.length ? (
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="project-card-skills mt-4 flex flex-wrap gap-2">
           {project.skills.slice(0, 4).map((skill) => <span className="project-skill-chip" key={skill.id}>{skill.name}</span>)}
           {project.skills.length > 4 ? <span className="project-skill-chip">+{project.skills.length - 4}</span> : null}
         </div>
-      ) : <p className="mt-5 text-xs text-[#83877f]">Skills to be decided</p>}
-      <div className="project-card-owner">
-        {project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-link" aria-label={`View ${name}'s profile`}><Avatar name={name} username={project.owner.username} size="sm" /></Link> : <Avatar name={name} size="sm" />}
-        <span className="min-w-0"><span className="block truncate">{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-name">{name}</Link> : name}</span>{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="block truncate text-xs font-medium text-[#83877f]">@{project.owner.username}</Link> : null}</span>
-      </div>
+      ) : <p className="project-card-no-skills mt-4 text-xs text-[#83877f]">Skills to be decided</p>}
       {crewProfiles.length ? <div className="project-card-crew-profiles" aria-label="Other crew members">{crewProfiles.slice(0, 4).map((member) => member.username ? <Link key={member.id} href={`/u/${encodeURIComponent(member.username)}`} className="project-card-crew-person" title={`View ${member.display_name}'s profile`}><Avatar name={member.display_name} username={member.username} size="sm" /><span>{member.display_name}</span></Link> : null)}{crewProfiles.length > 4 ? <span className="project-card-crew-more">+{crewProfiles.length - 4}</span> : null}</div> : null}
-      <p className="project-card-crew-count">Crew: {project.crew_count}</p>
-      {showUpdatedAt ? <p className="project-card-updated">Updated {new Date(project.updated_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</p> : null}
+      <footer className="project-card-footer">
+        <div className="project-card-owner">
+          {project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-link" aria-label={`View ${name}'s profile`}><Avatar name={name} username={project.owner.username} size="sm" /></Link> : <Avatar name={name} size="sm" />}
+          <span className="min-w-0"><span className="block truncate">{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-name">{name}</Link> : name}</span>{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="block truncate text-xs font-medium text-[#83877f]">@{project.owner.username}</Link> : null}</span>
+        </div>
+        <div className="project-card-meta">
+          <p className="project-card-crew-count">Crew of {project.crew_count}</p>
+          {showUpdatedAt ? <p className="project-card-updated">Updated {new Date(project.updated_at).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}</p> : null}
+        </div>
+      </footer>
     </article>
   );
 }

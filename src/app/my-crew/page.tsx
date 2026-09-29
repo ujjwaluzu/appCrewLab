@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/AppShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getProfilesForProjects } from "@/lib/crew";
 import { getCurrentUserProfile } from "@/lib/profile";
 import { getMyCrewProjects } from "@/lib/projects";
@@ -11,11 +11,9 @@ import { getMyCrewProjects } from "@/lib/projects";
 export const dynamic = "force-dynamic";
 
 export default async function MyCrewPage() {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
 
   const result = await getMyCrewProjects(auth.user.id);
   const crewProfiles = result.error ? null : await getProfilesForProjects(result.projects);

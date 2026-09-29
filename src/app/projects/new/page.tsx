@@ -3,17 +3,15 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app/AppShell";
 import { ProjectForm } from "@/components/projects/ProjectForm";
-import { getAuthState } from "@/lib/auth";
+import { getAuthState, requireResolvedAuthState } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProjectPage() {
-  const auth = await getAuthState();
-  if (!auth.user) redirect("/auth");
-  if (!auth.onboardingCompleted) redirect("/onboarding");
-  const profile = await getCurrentUserProfile();
-  if (!profile) redirect("/onboarding");
+  const auth = requireResolvedAuthState(await getAuthState());
+  if (auth.status === "onboarding-incomplete") redirect("/onboarding");
+  const profile = await getCurrentUserProfile(auth.user.id);
 
   return (
     <AppShell profile={profile} active="projects">
