@@ -135,6 +135,18 @@ export async function getMyCrewProjects(userId: string) {
   return getProjectsByIds(ids);
 }
 
+export async function getProjectsForProfileCrew(userId: string) {
+  const supabase = await createClient();
+  const { data: memberships, error } = await supabase
+    .from("project_members")
+    .select("project_id")
+    .eq("user_id", userId);
+  if (error) return { projects: [] as Project[], error: true };
+  if (!memberships?.length) return { projects: [] as Project[], error: false };
+  const result = await getProjectsByIds(memberships.map((row) => row.project_id));
+  return { ...result, projects: result.projects.filter((project) => project.owner_id !== userId) };
+}
+
 export async function getProjectById(projectId: string) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(projectId)) {
     return { project: null, error: false };

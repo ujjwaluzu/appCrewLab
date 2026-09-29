@@ -2,9 +2,10 @@ import Link from "next/link";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
+import type { CrewProfile } from "@/lib/crew";
 import type { Project } from "@/lib/projects";
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project, crewProfiles = [] }: { project: Project; crewProfiles?: CrewProfile[] }) {
   const name = project.owner?.display_name || project.owner?.username || "CrewLab builder";
 
   return (
@@ -23,9 +24,10 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
       ) : <p className="mt-5 text-xs text-[#83877f]">Skills to be decided</p>}
       <div className="project-card-owner">
-        <Avatar name={name} username={project.owner?.username} size="sm" />
-        <span className="min-w-0"><span className="block truncate">{name}</span>{project.owner?.username ? <span className="block truncate text-xs font-medium text-[#83877f]">@{project.owner.username}</span> : null}</span>
+        {project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-link" aria-label={`View ${name}'s profile`}><Avatar name={name} username={project.owner.username} size="sm" /></Link> : <Avatar name={name} size="sm" />}
+        <span className="min-w-0"><span className="block truncate">{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="project-card-owner-name">{name}</Link> : name}</span>{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="block truncate text-xs font-medium text-[#83877f]">@{project.owner.username}</Link> : null}</span>
       </div>
+      {crewProfiles.length ? <div className="project-card-crew-profiles" aria-label="Other crew members">{crewProfiles.slice(0, 4).map((member) => member.username ? <Link key={member.id} href={`/u/${encodeURIComponent(member.username)}`} className="project-card-crew-person" title={`View ${member.display_name}'s profile`}><Avatar name={member.display_name} username={member.username} size="sm" /><span>{member.display_name}</span></Link> : null)}{crewProfiles.length > 4 ? <span className="project-card-crew-more">+{crewProfiles.length - 4}</span> : null}</div> : null}
       <p className="project-card-crew-count">Crew: {project.crew_count}</p>
     </article>
   );
