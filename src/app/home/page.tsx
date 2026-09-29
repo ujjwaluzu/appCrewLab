@@ -39,7 +39,7 @@ export default async function HomePage() {
           <div className="workspace-heading-avatar"><Avatar name={profile.display_name} username={profile.username} size="md" /><span>Builder<br />at CrewLab</span></div>
         </header>
 
-        <section className="home-profile-card">
+        {completion < 100 ? <section className="home-profile-card">
           <div className="home-card-orbit" aria-hidden="true" />
           <div className="home-profile-main">
             <div className="home-profile-avatar"><Avatar name={profile.display_name} username={profile.username} size="xl" /></div>
@@ -55,13 +55,15 @@ export default async function HomePage() {
             <div className="home-completion-track" role="progressbar" aria-label="Profile strength" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completion}><span style={{ width: `${completion}%` }} /></div>
             <p>{completion === 100 ? "Looking good. Your profile is ready to meet its crew." : "A few more details will help collaborators get to know you."}</p>
           </div>
-        </section>
+        </section> : null}
 
         <section className="home-projects-section">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <div><p className="workspace-eyebrow">Keep building</p><h2>Your projects</h2></div>
+            <div>
+              <p className="workspace-eyebrow">Recent projects</p>
+              <div className="home-projects-title-row"><h2>Your projects</h2><Link href="/projects" className="home-view-all">View all <span aria-hidden="true">→</span></Link></div>
+            </div>
             <div className="flex flex-wrap gap-3">
-              <Link href="/projects" className="secondary-button">Discover projects</Link>
               <Link href="/projects/new" className="primary-button">Create a project</Link>
             </div>
           </div>
@@ -77,22 +79,13 @@ export default async function HomePage() {
           )}
         </section>
 
-        <div className="home-lower-grid">
-          <section className="home-next-card">
-            <div className="home-card-topline"><span className="home-index">01</span><span className="home-card-tag">Your next move</span></div>
-            <h2>Make your profile feel like you.</h2>
-            <p>Update your intro, add a skill, or tell your future collaborators what you’re looking for.</p>
-            <Link href="/profile" className="home-text-link">Edit profile <span aria-hidden="true">↗</span></Link>
-          </section>
-
-          <section className="home-coming-card">
-            <div className="home-card-topline"><span className="home-index">02</span><span className="home-card-tag">Building together</span></div>
-            <h2>Your crew</h2>
-            <p>Projects you&apos;re building with others.</p>
-            {crewProjects.error ? <p className="mt-4 text-sm text-[#9e4639]" role="alert">We couldn&apos;t load your crew. Please try again.</p> : crewProjects.projects.length ? <div className="mt-4 space-y-2">{crewProjects.projects.slice(0, 2).map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="home-crew-project"><span className="truncate">{project.title}</span><span>{project.crew_count}</span></Link>)}</div> : <p className="mt-4 text-sm text-[#625d53]">You haven&apos;t joined a crew yet.</p>}
-            <Link href="/my-crew" className="home-text-link">View my crew <span aria-hidden="true">â†—</span></Link>
-          </section>
-        </div>
+        <section className="home-crew-section">
+          <div className="home-crew-heading">
+            <div><p className="workspace-eyebrow">Building together</p><h2>Your crew</h2><p>Projects you&apos;re building with others.</p></div>
+            <Link href="/my-crew" className="home-view-all">View my crew <span aria-hidden="true">→</span></Link>
+          </div>
+          {crewProjects.error ? <p className="mt-5 text-sm text-[#9e4639]" role="alert">We couldn&apos;t load your crew. Please try again.</p> : crewProjects.projects.length ? <div className="home-crew-project-list">{crewProjects.projects.slice(0, 3).map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="home-crew-project"><span className="truncate">{project.title}</span><span>{project.crew_count} {project.crew_count === 1 ? "builder" : "builders"}</span></Link>)}</div> : <div className="home-crew-empty"><p>You haven&apos;t joined a crew yet.</p><Link href="/projects" className="home-text-link">Explore projects <span aria-hidden="true">→</span></Link></div>}
+        </section>
       </div>
     </AppShell>
   );

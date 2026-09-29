@@ -85,8 +85,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <aside className="project-owner-card">
             <p className="workspace-eyebrow">Created by</p>
             <div className="mt-4 flex items-center gap-3">
-              <Avatar name={ownerName} username={project.owner?.username} size="lg" />
-              <div className="min-w-0"><p className="truncate font-semibold text-[#26362c]">{ownerName}</p>{project.owner?.username ? <p className="mt-1 truncate text-sm text-[#7a7466]">@{project.owner.username}</p> : null}</div>
+              {project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} aria-label={`View ${ownerName}'s profile`}><Avatar name={ownerName} username={project.owner.username} size="lg" /></Link> : <Avatar name={ownerName} size="lg" />}
+              <div className="min-w-0"><p className="truncate font-semibold text-[#26362c]">{project.owner?.username ? <Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="crew-profile-link">{ownerName}</Link> : ownerName}</p>{project.owner?.username ? <p className="mt-1 truncate text-sm text-[#7a7466]"><Link href={`/u/${encodeURIComponent(project.owner.username)}`} className="crew-profile-link">@{project.owner.username}</Link></p> : null}</div>
             </div>
             <div className="mt-5 border-t border-[#17251f]/10 pt-4 text-xs text-[#83877f]">Started {new Date(project.created_at).toLocaleDateString("en", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}</div>
           </aside>

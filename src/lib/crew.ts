@@ -18,6 +18,11 @@ export type CrewMember = CrewProfile & {
 export type PendingJoinRequest = {
   id: string;
   created_at: string;
+  motivation: string | null;
+  contribution: string | null;
+  availability: string | null;
+  additional_information: string | null;
+  application_legacy: boolean;
   user: CrewProfile;
 };
 
@@ -38,6 +43,27 @@ async function getProfiles(ids: string[]) {
   return { profiles, error: false };
 }
 
+export async function getProfilesForProjects(projects: Project[]) {
+  const byProject = new Map<string, CrewProfile[]>();
+  if (!projects.length) return { profiles: byProject, error: false };
+  const supabase = await createClient();
+  const { data: memberships, error } = await supabase
+    .from("project_members")
+    .select("project_id, user_id")
+    .in("project_id", projects.map((project) => project.id));
+  if (error) return { profiles: byProject, error: true };
+  const projectOwners = new Map(projects.map((project) => [project.id, project.owner_id]));
+  const rows = (memberships ?? []).filter((row) => row.user_id !== projectOwners.get(row.project_id));
+  const result = await getProfiles(rows.map((row) => row.user_id));
+  if (result.error) return { profiles: byProject, error: true };
+  for (const row of rows) {
+    const person = result.profiles.get(row.user_id);
+    if (!person) continue;
+    byProject.set(row.project_id, [...(byProject.get(row.project_id) ?? []), person]);
+  }
+  return { profiles: byProject, error: false };
+}
+
 export async function getProjectCrewData(project: Project, viewerId: string): Promise<{
   members: CrewMember[];
   requestStatus: JoinRequestStatus | null;
@@ -53,7 +79,7 @@ export async function getProjectCrewData(project: Project, viewerId: string): Pr
       ? Promise.resolve({ data: null, error: null })
       : supabase.from("join_requests").select("id, status, created_at").eq("project_id", project.id).eq("user_id", viewerId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     isOwner
-      ? supabase.from("join_requests").select("id, user_id, created_at").eq("project_id", project.id).eq("status", "pending").order("created_at", { ascending: true })
+      ? supabase.from("join_requests").select("id, user_id, created_at, motivation, contribution, availability, additional_information, application_legacy").eq("project_id", project.id).eq("status", "pending").order("created_at", { ascending: true })
       : Promise.resolve({ data: [], error: null }),
   ]);
 
@@ -87,6 +113,11 @@ export async function getProjectCrewData(project: Project, viewerId: string): Pr
   const pendingRequests: PendingJoinRequest[] = pendingRows.map((request) => ({
     id: request.id,
     created_at: request.created_at,
+    motivation: request.motivation,
+    contribution: request.contribution,
+    availability: request.availability,
+    additional_information: request.additional_information,
+    application_legacy: request.application_legacy,
     user: profiles.get(request.user_id) ?? { id: request.user_id, display_name: "CrewLab builder", username: null, skills: [] },
   }));
   const isMember = memberRows.some((member) => member.user_id === viewerId);
