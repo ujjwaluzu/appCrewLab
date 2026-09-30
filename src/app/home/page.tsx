@@ -21,7 +21,7 @@ function HomeIcon({ name }: { name: HomeIconName }) {
 }
 
 function HomeStat({ label, count, href, icon, error }: { label: string; count: number | null; href: string; icon: HomeIconName; error: boolean }) {
-  return <Link href={href} className="home-stat-card"><span className="home-stat-icon"><HomeIcon name={icon} /></span><span className="home-stat-label">{label}</span><strong>{error || count === null ? "—" : count}</strong>{error ? <span className="home-stat-support is-error">Temporarily unavailable</span> : null}</Link>;
+  return <Link href={href} className="home-stat-card"><span className="home-stat-icon"><HomeIcon name={icon} /></span><span className="home-stat-label">{label}</span><strong>{error || count === null ? "N/A" : count}</strong>{error ? <span className="home-stat-support is-error">Temporarily unavailable</span> : null}</Link>;
 }
 
 export default async function HomePage() {

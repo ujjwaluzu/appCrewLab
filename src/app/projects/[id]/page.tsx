@@ -19,9 +19,9 @@ type PageProps = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const { project } = await getProjectById(id);
-  if (!project) return { title: "Project — CrewLab" };
+  if (!project) return { title: "Project | CrewLab" };
   return {
-    title: `${project.title} — CrewLab`,
+    title: `${project.title} | CrewLab`,
     description: project.short_description || `Explore ${project.title} on CrewLab.`,
   };
 }

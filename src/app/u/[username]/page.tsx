@@ -17,10 +17,10 @@ type PageProps = { params: Promise<{ username: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username } = await params;
   const result = await getPublicProfileByUsername(username);
-  if (!result.profile) return { title: "Builder profile — CrewLab" };
+  if (!result.profile) return { title: "Builder profile | CrewLab" };
   const name = result.profile.display_name || result.profile.username || "CrewLab builder";
   return {
-    title: `${name} (@${result.profile.username}) — CrewLab`,
+    title: `${name} (@${result.profile.username}) | CrewLab`,
     description: result.profile.bio || `Explore ${name}'s projects and skills on CrewLab.`,
   };
 }

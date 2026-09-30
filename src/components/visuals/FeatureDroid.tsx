@@ -1,5 +1,5 @@
 /**
- * Astromech droid — the character that sits in the right column of the
+ * Astromech droid: the character that sits in the right column of the
  * /features hero.
  *
  * Built from the R2-D2-style astromech brief: 1.1 m tall by 0.7 m wide,
@@ -10,14 +10,14 @@
  * Recoloured off the brief, deliberately. The spec calls for blue accent panels;
  * this site is a warm near-black canvas running a single orange accent, and blue
  * is the one hue in it that reads as somebody else's product. So the accents are
- * warm graphite instead — same contrast against the white chassis that the blue
- * was providing — and orange is left as the droid's only colour, which makes it
+ * warm graphite instead, which provides the same contrast against the white
+ * chassis, and orange is left as the droid's only colour, which makes it
  * unambiguously the *lit* one: lenses, status lights, panel lips, the beams, the
  * pool of light on the floor. Every grey is on the warm stone ramp rather than
  * the cool zinc one, for the same reason.
  *
- * The brief's production deliverables — .blend/.fbx, an IK/FK control rig, 4K
- * PBR texture sets, baked animation clips — are a DCC pipeline, not something a
+ * The brief's production deliverables (.blend/.fbx, an IK/FK control rig, 4K
+ * PBR texture sets, baked animation clips) are a DCC pipeline, not something a
  * web page can hold. What is reproducible here is the *design and the motion*,
  * so this is inline SVG with the rig's controls expressed as CSS keyframes in
  * app/globals.css:
@@ -43,7 +43,7 @@
  * droid group, so the chassis occludes their origins and they read as projected
  * rather than pasted on top.
  *
- * Pure CSS animation on purpose — no state, no effects, no `"use client"`. The
+ * Pure CSS animation is deliberate: no state, no effects, no `"use client"`. The
  * hero stays a Server Component and the whole illustration costs zero JS.
  * `prefers-reduced-motion` drops every animation to a still pose in globals.css.
  *
@@ -92,7 +92,7 @@ export function FeatureDroid({ className }: { className?: string }) {
       className={`aiptx-droid-boot h-auto w-full ${className ?? ""}`}
     >
       <defs>
-        {/* Painted aluminium — the white body panels. Lit from the upper left,
+        {/* Painted aluminium: the white body panels. Lit from the upper left,
             which is where the hero's bloom sits. */}
         <linearGradient id="droid-paint" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#fafafa" />
@@ -100,7 +100,7 @@ export function FeatureDroid({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#a8a29e" />
         </linearGradient>
 
-        {/* Metallic silver dome — brighter at the crown, falling into shadow at
+        {/* Metallic silver dome: brighter at the crown, falling into shadow at
             the neck ring. */}
         <linearGradient id="droid-dome" x1="0.2" y1="0" x2="0.8" y2="1">
           <stop offset="0%" stopColor="#fafafa" />
@@ -108,21 +108,21 @@ export function FeatureDroid({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#78716c" />
         </linearGradient>
 
-        {/* Accent panels — warm graphite. See the note above on why not blue. */}
+        {/* Accent panels use warm graphite. See the note above on why not blue. */}
         <linearGradient id="droid-accent" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#44403c" />
           <stop offset="55%" stopColor="#231f1d" />
           <stop offset="100%" stopColor="#12100f" />
         </linearGradient>
 
-        {/* Ember — the lit edge on an accent panel, and the leg stripes. */}
+        {/* Ember is the lit edge on an accent panel and the leg stripes. */}
         <linearGradient id="droid-ember" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#f7b0a9" />
           <stop offset="55%" stopColor="#d42a1e" />
           <stop offset="100%" stopColor="#7f1d16" />
         </linearGradient>
 
-        {/* Brushed steel — pistons, hubs, neck ring, wheel. */}
+        {/* Brushed steel forms the pistons, hubs, neck ring, and wheel. */}
         <linearGradient id="droid-steel" x1="0" y1="0" x2="1" y2="0.6">
           <stop offset="0%" stopColor="#a8a29e" />
           <stop offset="45%" stopColor="#78716c" />
@@ -161,8 +161,8 @@ export function FeatureDroid({ className }: { className?: string }) {
         </radialGradient>
 
         {/* Ground contact. A black shadow is invisible on a #080606 canvas, so
-            the floor reads as a warm pool of light the droid stands in instead
-            — same job (it anchors the feet), opposite polarity. */}
+            the floor reads as a warm pool of light around the droid. It anchors
+            the feet with opposite polarity. */}
         <radialGradient id="droid-shadow" cx="0.5" cy="0.5" r="0.5">
           <stop offset="0%" stopColor="#d42a1e" stopOpacity="0.3" />
           <stop offset="55%" stopColor="#9b261f" stopOpacity="0.1" />
@@ -179,8 +179,8 @@ export function FeatureDroid({ className }: { className?: string }) {
 
       {/* ------------------------------------------------ scanning field */}
       {/* One slow dashed ring for texture, plus pings expanding out of the
-          droid. `r` is not CSS-animatable, so the pings are scaled — hence the
-          shared radius and per-element transform. The whole field powers up a
+          droid. `r` is not CSS-animatable, so the pings are scaled. They share a
+          radius and use per-element transforms. The whole field powers up a
           beat after the droid itself. */}
       <g
         aria-hidden="true"
@@ -211,7 +211,7 @@ export function FeatureDroid({ className }: { className?: string }) {
           />
         ))}
         {/* Hover only: a second, brighter ring fading up under the cursor.
-            Deliberately not keyframe-animated — you cannot transition out of a
+            Deliberately not keyframe-animated because you cannot transition out of a
             running animation's current transform, so anything that has to
             respond smoothly to hover has to be a separate, still element. */}
         <circle
@@ -270,7 +270,7 @@ export function FeatureDroid({ className }: { className?: string }) {
               key={mirror ? "right" : "left"}
               transform={mirror ? "translate(320 0) scale(-1 1)" : undefined}
             >
-              {/* Upper leg — white armour over the shoulder. */}
+              {/* Upper leg: white armour over the shoulder. */}
               <rect
                 x="42"
                 y="156"
@@ -279,7 +279,7 @@ export function FeatureDroid({ className }: { className?: string }) {
                 rx="9"
                 fill="url(#droid-paint)"
               />
-              {/* Accent strip, ember rather than graphite — at leg scale a dark
+              {/* Accent strip uses ember rather than graphite. At leg scale a dark
                   bar disappears into the shadow between body and leg. */}
               <rect
                 x="50"
@@ -351,7 +351,8 @@ export function FeatureDroid({ className }: { className?: string }) {
 
           {/* ---------------------------------------------- centre leg */}
           {/* Housing is fixed to the chassis; everything below telescopes out of
-              it on a long cycle and stows again — the brief's animation test 5. */}
+              it on a long cycle and stows again. This follows animation test 5
+              from the brief. */}
           <rect x="146" y="350" width="28" height="36" rx="4" fill="url(#droid-steel)" />
           <rect
             x="151"
@@ -417,7 +418,7 @@ export function FeatureDroid({ className }: { className?: string }) {
           <rect x="96" y="162" width="128" height="17" rx="4" fill="url(#droid-accent)" />
           <rect x="98" y="163" width="124" height="2" rx="1" fill="url(#droid-ember)" opacity="0.9" />
 
-          {/* Logic display — the recessed panel the agent thinks out loud on. */}
+          {/* Logic display: the recessed panel where the agent thinks out loud. */}
           <rect x="112" y="188" width="96" height="34" rx="5" fill="#141313" />
           <rect
             x="112"
@@ -507,7 +508,7 @@ export function FeatureDroid({ className }: { className?: string }) {
           {/* Chassis floor. */}
           <rect x="90" y="342" width="140" height="18" rx="6" fill="url(#droid-steel)" />
 
-          {/* Surface wear — a couple of scratches, kept faint. */}
+          {/* Surface wear includes a couple of faint scratches. */}
           <path
             d="M108 296 l22 -8 M186 236 l14 -5"
             stroke="#ffffff"
@@ -517,7 +518,7 @@ export function FeatureDroid({ className }: { className?: string }) {
 
           {/* -------------------------------------------------- dome */}
           {/* Counter-rotates the body lean so the head stays upright. It still
-              swings sideways with the body — only the tilt is cancelled, which
+              swings sideways with the body. Only the tilt is cancelled, which
               is exactly what a levelled head does. */}
           <g className="aiptx-droid-level">
             <path d="M88 146 A72 72 0 0 1 232 146 Z" fill="url(#droid-dome)" />
@@ -544,7 +545,7 @@ export function FeatureDroid({ className }: { className?: string }) {
                     opacity="0.45"
                   />
 
-                  {/* Holoprojector housing — hardware only; it is not
+                  {/* Holoprojector housing: hardware only; it is not
                       projecting anything. */}
                   <rect x="152" y="80" width="16" height="9" rx="2" fill="url(#droid-steel)" />
                   <circle cx="160" cy="81" r="4" fill="#1c1917" />
@@ -612,7 +613,7 @@ export function FeatureDroid({ className }: { className?: string }) {
                 </g>
               </g>
 
-              {/* Specular sweep across the dome. Outside the head rig — the
+              {/* Specular sweep across the dome. It sits outside the head rig;
                   highlight belongs to the light, not to the head, so it must
                   not travel with the face. */}
               <ellipse cx="128" cy="98" rx="30" ry="18" fill="#ffffff" opacity="0.22" />

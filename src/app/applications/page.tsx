@@ -15,7 +15,7 @@ function formatApplicationDate(value: string) {
 }
 
 function ApplicationCount({ count, error }: { count: number | null; error: boolean }) {
-  return <span className={`application-count ${error ? "is-error" : ""}`}>{error || count === null ? "—" : count}</span>;
+  return <span className={`application-count ${error ? "is-error" : ""}`}>{error || count === null ? "N/A" : count}</span>;
 }
 
 export default async function ApplicationsPage() {

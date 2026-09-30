@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CrewLab — Build in good company",
+  title: "CrewLab | Build in good company",
   description: "Find people who want to build the same things you do.",
   manifest: "/favicon_io/site.webmanifest",
   icons: {

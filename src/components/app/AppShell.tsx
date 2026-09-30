@@ -39,8 +39,8 @@ export function AppShell({ profile, active, children }: { profile: UserProfile; 
           <NavItem href="/projects" label="Projects" icon="projects" active={active === "projects"} />
           <NavItem href="/my-crew" label="My Crew" icon="crew" active={active === "my-crew"} />
           <NavItem href="/discussion" label="Discussion" icon="discussion" active={active === "discussion"} />
-          <NavItem href="/github" label="GitHub" icon="github" active={active === "github"} />
           <NavItem href="/applications" label="Applications" icon="applications" active={active === "applications"} />
+          <NavItem href="/github" label="GitHub" icon="github" active={active === "github"} />
         </nav>
       </header>
 
@@ -60,8 +60,8 @@ export function AppShell({ profile, active, children }: { profile: UserProfile; 
               <NavItem href="/projects" label="Projects" icon="projects" active={active === "projects"} collapsed={!sidebarOpen} />
               <NavItem href="/my-crew" label="My Crew" icon="crew" active={active === "my-crew"} collapsed={!sidebarOpen} />
               <NavItem href="/discussion" label="Discussion" icon="discussion" active={active === "discussion"} collapsed={!sidebarOpen} />
-              <NavItem href="/github" label="GitHub" icon="github" active={active === "github"} collapsed={!sidebarOpen} />
               <NavItem href="/applications" label="Applications" icon="applications" active={active === "applications"} collapsed={!sidebarOpen} />
+              <NavItem href="/github" label="GitHub" icon="github" active={active === "github"} collapsed={!sidebarOpen} />
             </nav>
           </div>
         </aside>
