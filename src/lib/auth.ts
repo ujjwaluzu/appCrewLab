@@ -14,6 +14,11 @@ export type AuthState =
 
 export type ResolvedAuthState = Extract<AuthState, { status: "onboarding-incomplete" | "authenticated" }>;
 
+/** supabase-js reports a logged-out visitor as an error rather than as a null user. */
+function isMissingSessionError(error: { name?: string } | null): boolean {
+  return error?.name === "AuthSessionMissingError";
+}
+
 export async function getAuthState(): Promise<AuthState> {
   if (!isSupabaseConfigured()) {
     return { status: "unauthenticated", user: null, onboardingCompleted: false };
@@ -24,9 +29,13 @@ export async function getAuthState(): Promise<AuthState> {
   try {
     supabase = await createClient();
     const { data, error } = await supabase.auth.getUser();
-    if (error) return { status: "auth-error", user: null, onboardingCompleted: false };
-    if (!data.user) return { status: "unauthenticated", user: null, onboardingCompleted: false };
-    userId = data.user.id;
+    if (data.user) {
+      userId = data.user.id;
+    } else if (isMissingSessionError(error)) {
+      return { status: "unauthenticated", user: null, onboardingCompleted: false };
+    } else {
+      return { status: "auth-error", user: null, onboardingCompleted: false };
+    }
   } catch {
     return { status: "auth-error", user: null, onboardingCompleted: false };
   }
