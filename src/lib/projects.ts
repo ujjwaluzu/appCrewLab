@@ -159,6 +159,37 @@ export async function getMyCrewProjects(userId: string) {
   return getProjectsByIds(ids);
 }
 
+export async function getDiscussionProjects(userId: string) {
+  const supabase = await createClient();
+  const [{ data: memberships, error: membershipError }, { data: ownedProjects, error: ownedError }] = await Promise.all([
+    supabase.from("project_members").select("project_id").eq("user_id", userId),
+    supabase.from("projects").select("id").eq("owner_id", userId),
+  ]);
+  if (membershipError || ownedError) return { projects: [] as Project[], error: true };
+  const projectIds = [...new Set([
+    ...(memberships ?? []).map((membership) => membership.project_id),
+    ...(ownedProjects ?? []).map((project) => project.id),
+  ])];
+  return getProjectsByIds(projectIds, { strict: true });
+}
+
+export async function getDiscussionProject(projectId: string, userId: string) {
+  const { project, error: projectError } = await getProjectById(projectId);
+  if (projectError || !project) return { project: null as Project | null, error: projectError };
+  if (project.owner_id === userId) return { project, error: false };
+
+  const supabase = await createClient();
+  const { data: membership, error } = await supabase
+    .from("project_members")
+    .select("project_id")
+    .eq("project_id", projectId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) return { project: null as Project | null, error: true };
+  return { project: membership ? project : null, error: false };
+}
+
 export async function getDashboardOwnedProjects(userId: string, limit = 4) {
   const supabase = await createClient();
   const { data, error, count } = await supabase
