@@ -803,77 +803,131 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (prefers-reduced-motion: reduce) { .discussion-room-layout,.discussion-chat-sidebar,.discussion-chat-toggle { transition: none; } }
 
 /* Read-only GitHub repository workspace */
-.discussion-github-panel { display: block; min-height: clamp(32rem, 70dvh, 52rem); overflow: auto; padding: clamp(1rem, 2.2vw, 1.75rem); }
-.discussion-github-state { display: flex; min-height: inherit; max-width: 34rem; flex-direction: column; align-items: flex-start; justify-content: center; margin: 0 auto; }
-.discussion-github-state .discussion-repository-icon { width: 3rem; height: 3rem; font-size: .8rem; font-weight: 800; }
-.discussion-github-state .workspace-eyebrow { margin: .1rem 0 .35rem; color: #a33c32; font-size: .68rem; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
-.discussion-github-state h2 { color: #171512; font-size: clamp(1.3rem, 2vw, 1.8rem); font-weight: 760; letter-spacing: -.04em; line-height: 1.2; overflow-wrap: anywhere; }
-.discussion-github-state > p:not(.workspace-eyebrow) { max-width: 31rem; margin: .65rem 0 1rem; color: #69766e; font-size: .86rem; line-height: 1.65; }
-.discussion-github-state .primary-button { display: inline-flex; min-height: 2.8rem; align-items: center; justify-content: center; margin-top: .35rem; border: 0; border-radius: .65rem; background: #171512; padding: .65rem .95rem; color: white; font-size: .78rem; font-weight: 750; text-decoration: none; transition: background 140ms ease, transform 140ms ease; }
+.discussion-github-panel { display: block; min-height: 0; overflow: visible; padding: clamp(.9rem, 1.8vw, 1.45rem); }
+.discussion-github-state { display: flex; min-height: 13rem; max-width: 34rem; flex-direction: column; align-items: flex-start; justify-content: center; margin: 0 auto; }
+.discussion-github-state .discussion-repository-icon { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; margin-bottom: .85rem; border: 1px solid rgb(212 42 30 / 14%); border-radius: .8rem; background: rgb(212 42 30 / 6%); color: #a33c32; }
+.discussion-github-state .workspace-eyebrow { margin: .1rem 0 .35rem; color: #a33c32; font-size: .65rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.discussion-github-state h2 { color: #171512; font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 760; letter-spacing: -.04em; line-height: 1.2; overflow-wrap: anywhere; }
+.discussion-github-state > p:not(.workspace-eyebrow) { max-width: 31rem; margin: .55rem 0 .9rem; color: #69766e; font-size: .82rem; line-height: 1.6; }
+.discussion-github-state .primary-button { display: inline-flex; min-height: 2.65rem; align-items: center; justify-content: center; margin-top: .25rem; border: 0; border-radius: .65rem; background: #171512; padding: .6rem .9rem; color: white; font-size: .75rem; font-weight: 750; text-decoration: none; transition: background 140ms ease, transform 140ms ease; }
 .discussion-github-state .primary-button:hover:not(:disabled) { transform: translateY(-1px); background: #a33c32; }
 .discussion-github-state .primary-button:focus-visible,.discussion-github-state .secondary-button:focus-visible,.discussion-github-state select:focus-visible { outline: 3px solid rgb(212 42 30 / 35%); outline-offset: 3px; }
 .discussion-github-state .primary-button:disabled { cursor: wait; opacity: .65; }
-.discussion-github-state .secondary-button { min-height: 2.65rem; border: 1px solid rgb(23 21 18 / 15%); border-radius: .65rem; background: #fffefa; padding: .6rem .85rem; color: #343d36; font-size: .76rem; font-weight: 700; }
+.discussion-github-state .secondary-button { min-height: 2.5rem; border: 1px solid rgb(23 21 18 / 15%); border-radius: .65rem; background: #fffefa; padding: .55rem .8rem; color: #343d36; font-size: .74rem; font-weight: 700; }
 .discussion-github-state .secondary-button:hover { background: #f3eee3; }
 .discussion-repository-picker { width: 100%; }
 .discussion-repository-picker form { display: grid; width: min(100%, 28rem); gap: .65rem; margin-top: .6rem; }
 .discussion-repository-picker label { color: #343d36; font-size: .74rem; font-weight: 700; }
 .discussion-repository-picker select { width: 100%; min-height: 2.8rem; border: 1px solid rgb(23 21 18 / 16%); border-radius: .6rem; background: #fffefa; padding: .55rem .7rem; color: #171512; font: inherit; }
-.discussion-github-inline-error { margin-top: .75rem; border: 1px solid rgb(158 70 57 / 16%); border-radius: .6rem; background: #fff7f3; padding: .65rem .75rem; color: #9e4639; font-size: .74rem; line-height: 1.5; }
-.discussion-github-callback-message { margin: 0 0 .9rem; border: 1px solid rgb(70 98 77 / 16%); border-radius: .6rem; background: #f2f7f0; padding: .65rem .75rem; color: #46624d; font-size: .75rem; line-height: 1.5; }
+.discussion-github-inline-error { margin: .7rem 0; border: 1px solid rgb(158 70 57 / 16%); border-radius: .6rem; background: #fff7f3; padding: .65rem .75rem; color: #9e4639; font-size: .74rem; line-height: 1.5; }
+.discussion-github-callback-message { margin: 0 0 .8rem; border: 1px solid rgb(70 98 77 / 16%); border-radius: .6rem; background: #f2f7f0; padding: .6rem .75rem; color: #46624d; font-size: .74rem; line-height: 1.5; }
 .discussion-github-callback-message.is-error { border-color: rgb(158 70 57 / 18%); background: #fff7f3; color: #9e4639; }
 .discussion-github-repositories-loading,.discussion-github-repositories-empty { max-width: 28rem; margin-top: .65rem; color: #69766e; font-size: .76rem; line-height: 1.55; }
-.discussion-github-loading { display: flex; min-height: inherit; align-items: center; justify-content: center; gap: .45rem; color: #69766e; font-size: .82rem; }
-.discussion-github-loading > span { width: .4rem; height: .4rem; border-radius: 50%; background: #a33c32; animation: github-pulse 1s ease-in-out infinite alternate; }
+.discussion-github-loading { display: flex; min-height: 12rem; align-items: center; justify-content: center; gap: .45rem; color: #69766e; font-size: .8rem; }
+.discussion-github-loading > span { width: .38rem; height: .38rem; border-radius: 50%; background: #a33c32; animation: github-pulse 1s ease-in-out infinite alternate; }
 .discussion-github-loading > span:nth-child(2) { animation-delay: 140ms; }
 .discussion-github-loading > span:nth-child(3) { animation-delay: 280ms; }
 @keyframes github-pulse { to { transform: translateY(-.3rem); opacity: .45; } }
 .discussion-github-connected { min-width: 0; }
-.discussion-github-repo-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1.2rem; }
-.discussion-github-repo-header .workspace-eyebrow { color: #a33c32; font-size: .65rem; font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
-.discussion-github-repo-header h2 { margin-top: .25rem; color: #171512; font-size: clamp(1.2rem, 2.2vw, 1.75rem); font-weight: 780; letter-spacing: -.04em; overflow-wrap: anywhere; }
-.discussion-github-repo-header p:not(.workspace-eyebrow) { max-width: 55rem; margin-top: .4rem; color: #69766e; font-size: .78rem; line-height: 1.55; }
-.discussion-github-repo-actions { display: flex; flex: 0 0 auto; align-items: center; gap: .5rem; }
-.discussion-github-repo-actions .secondary-button,.discussion-github-disconnect { display: inline-flex; min-height: 2.45rem; align-items: center; justify-content: center; border: 1px solid rgb(23 21 18 / 14%); border-radius: .6rem; background: #fffefa; padding: .5rem .7rem; color: #343d36; font-size: .7rem; font-weight: 700; text-decoration: none; }
-.discussion-github-repo-actions .secondary-button:hover,.discussion-github-disconnect:hover:not(:disabled) { background: #f3eee3; }
-.discussion-github-repo-actions :focus-visible { outline: 3px solid rgb(212 42 30 / 35%); outline-offset: 3px; }
-.discussion-github-disconnect { color: #9e4639; }
+.discussion-github-repo-header { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding-bottom: 1rem; }
+.discussion-github-repo-identity { display: flex; min-width: 0; align-items: flex-start; gap: .85rem; }
+.discussion-github-brand-icon { display: grid; width: 2.75rem; height: 2.75rem; flex: 0 0 auto; place-items: center; border: 1px solid rgb(23 21 18 / 9%); border-radius: .8rem; background: #fffefa; color: #171512; }
+.discussion-github-mark { display: block; width: 1.45rem; height: 1.45rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.discussion-github-repo-copy { min-width: 0; padding-top: .05rem; }
+.discussion-github-repo-title-row { display: flex; min-width: 0; align-items: center; flex-wrap: wrap; gap: .55rem .75rem; }
+.discussion-github-repo-header h2 { min-width: 0; color: #171512; font-size: clamp(1.2rem, 2vw, 1.65rem); font-weight: 560; letter-spacing: -.045em; line-height: 1.25; overflow-wrap: anywhere; }
+.discussion-github-repo-header h2 > span:first-child { color: #69766e; }
+.discussion-github-repo-header h2 > strong { font-weight: 780; }
+.discussion-github-repo-slash { color: #aaa69b; }
+.discussion-github-visibility { display: inline-flex; min-height: 1.35rem; align-items: center; border: 1px solid rgb(23 21 18 / 14%); border-radius: 99px; padding: .15rem .48rem; color: #69766e; font-size: .61rem; font-weight: 700; }
+.discussion-github-visibility.is-private { border-color: rgb(163 60 50 / 22%); color: #9e4639; }
+.discussion-github-repo-header p { margin-top: .35rem; color: #69766e; font-size: .78rem; line-height: 1.5; overflow-wrap: anywhere; }
+.discussion-github-repo-actions { display: flex; flex: 0 0 auto; align-items: center; gap: .45rem; }
+.discussion-github-open-button,.discussion-github-disconnect { display: inline-flex; min-height: 2.4rem; align-items: center; justify-content: center; gap: .4rem; border-radius: .6rem; padding: .5rem .72rem; font-size: .7rem; font-weight: 720; text-decoration: none; transition: background 140ms ease, border-color 140ms ease; }
+.discussion-github-open-button { border: 1px solid #171512; background: #171512; color: #fffefa; }
+.discussion-github-open-button:hover { border-color: #a33c32; background: #a33c32; }
+.discussion-github-disconnect { border: 1px solid rgb(158 70 57 / 18%); background: transparent; color: #9e4639; cursor: pointer; }
+.discussion-github-disconnect:hover:not(:disabled) { border-color: rgb(158 70 57 / 32%); background: #fff7f3; }
 .discussion-github-disconnect:disabled { cursor: wait; opacity: .55; }
-.discussion-github-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .55rem; margin: 0 0 1.2rem; }
-.discussion-github-stats > div { min-width: 0; border: 1px solid rgb(23 21 18 / 8%); border-radius: .65rem; background: #fffefa; padding: .65rem .75rem; }
-.discussion-github-stats dt { color: #77776e; font-size: .62rem; font-weight: 650; }
-.discussion-github-stats dd { margin-top: .25rem; color: #26362c; font-size: .8rem; font-weight: 750; overflow-wrap: anywhere; }
-.discussion-github-tabs { display: flex; min-width: 0; gap: .15rem; overflow-x: auto; border-bottom: 1px solid rgb(23 21 18 / 12%); scrollbar-width: thin; }
-.discussion-github-tabs button { display: inline-flex; min-height: 2.7rem; flex: 0 0 auto; align-items: center; gap: .4rem; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: .55rem .7rem; color: #69766e; font-size: .72rem; font-weight: 700; cursor: pointer; }
+.discussion-github-repo-actions :focus-visible { outline: 3px solid rgb(212 42 30 / 35%); outline-offset: 3px; }
+.discussion-github-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0 0 .9rem; overflow: hidden; border: 1px solid rgb(23 21 18 / 9%); border-radius: .7rem; background: #fffefa; }
+.discussion-github-stats > div { min-width: 0; padding: .55rem .75rem; }
+.discussion-github-stats > div + div { border-left: 1px solid rgb(23 21 18 / 8%); }
+.discussion-github-stats dt { color: #77776e; font-size: .61rem; font-weight: 650; }
+.discussion-github-stats dd { margin-top: .2rem; color: #26362c; font-size: .78rem; font-weight: 760; overflow-wrap: anywhere; }
+.discussion-github-stats dd code { border-radius: .25rem; background: #f3f0e8; padding: .1rem .27rem; color: #505a51; font-size: .68rem; }
+.discussion-github-tabs { display: flex; min-width: 0; gap: .1rem; overflow-x: auto; border-bottom: 1px solid rgb(23 21 18 / 12%); scrollbar-width: thin; }
+.discussion-github-tabs button { position: relative; display: inline-flex; min-height: 2.65rem; flex: 0 0 auto; align-items: center; gap: .4rem; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: .5rem .72rem; color: #69766e; font-size: .72rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .discussion-github-tabs button:hover { color: #171512; }
 .discussion-github-tabs button.is-active { border-bottom-color: #a33c32; color: #171512; }
 .discussion-github-tabs button:focus-visible { outline: 3px solid rgb(212 42 30 / 35%); outline-offset: -3px; }
-.discussion-github-tabs button > span { display: inline-grid; min-width: 1.25rem; height: 1.25rem; place-items: center; border-radius: 99px; background: #eee9df; padding: 0 .3rem; color: #5d665f; font-size: .59rem; }
-.discussion-github-content { min-width: 0; }
-.discussion-github-overview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; padding-top: 1.1rem; }
-.discussion-github-overview h3 { margin-bottom: .45rem; color: #343d36; font-size: .76rem; font-weight: 760; }
-.discussion-github-list { display: grid; padding-top: .55rem; }
-.discussion-github-list-item { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: .8rem; border-bottom: 1px solid rgb(23 21 18 / 7%); padding: .8rem .25rem; color: inherit; text-decoration: none; }
-.discussion-github-list-item:first-child { border-top: 1px solid rgb(23 21 18 / 7%); }
-a.discussion-github-list-item:hover { background: rgb(243 238 227 / 55%); }
+.discussion-github-tabs button > span { display: inline-grid; min-width: 1.2rem; height: 1.2rem; place-items: center; border-radius: 99px; background: #eee9df; padding: 0 .28rem; color: #6b6b62; font-size: .58rem; font-weight: 650; }
+.discussion-github-content { min-width: 0; outline: none; }
+.discussion-github-overview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.8rem,1.6vw,1.35rem); padding-top: .8rem; }
+.discussion-github-overview-section,.discussion-github-tab-section { min-width: 0; }
+.discussion-github-section-heading { display: flex; min-height: 2.5rem; align-items: center; justify-content: space-between; gap: .7rem; border-bottom: 1px solid rgb(23 21 18 / 10%); padding: 0 .15rem .55rem; }
+.discussion-github-section-heading > div { display: flex; min-width: 0; align-items: baseline; flex-wrap: wrap; gap: .4rem .55rem; }
+.discussion-github-section-heading h3 { color: #343d36; font-size: .82rem; font-weight: 760; letter-spacing: -.02em; }
+.discussion-github-section-heading > div > span { color: #8a897f; font-size: .62rem; }
+.discussion-github-section-heading button { flex: 0 0 auto; border: 0; background: transparent; padding: .25rem; color: #9e4639; font-size: .65rem; font-weight: 700; cursor: pointer; }
+.discussion-github-section-heading button:hover { color: #171512; text-decoration: underline; text-underline-offset: .15em; }
+.discussion-github-section-heading button:focus-visible { outline: 2px solid rgb(212 42 30 / 50%); outline-offset: 2px; }
+.discussion-github-list { display: grid; }
+.discussion-github-list-item { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: .7rem; border-bottom: 1px solid rgb(23 21 18 / 7%); padding: .62rem .35rem; color: inherit; text-decoration: none; }
+.discussion-github-list-item:first-child { border-top: 0; }
+a.discussion-github-list-item:hover { background: rgb(243 238 227 / 58%); }
 .discussion-github-list-item:focus-visible { position: relative; outline: 3px solid rgb(212 42 30 / 35%); outline-offset: -2px; }
-.discussion-github-item-main { display: grid; min-width: 0; gap: .25rem; }
-.discussion-github-item-main strong { color: #26362c; font-size: .74rem; font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; }
-.discussion-github-item-main small,.discussion-github-list-item time { color: #77776e; font-size: .63rem; line-height: 1.5; }
+.discussion-github-item-main { display: grid; min-width: 0; gap: .24rem; }
+.discussion-github-item-main strong { color: #26362c; font-size: .73rem; font-weight: 690; line-height: 1.45; overflow-wrap: anywhere; }
+.discussion-github-item-main small,.discussion-github-list-item time { color: #77776e; font-size: .63rem; line-height: 1.5; overflow-wrap: anywhere; }
 .discussion-github-list-item time { flex: 0 0 auto; text-align: right; }
-.discussion-github-list-item code { flex: 0 0 auto; border-radius: .3rem; background: #eee9df; padding: .2rem .35rem; color: #5d665f; font-size: .62rem; }
+.discussion-github-list-item code { flex: 0 0 auto; border-radius: .3rem; background: #f1eee6; padding: .22rem .36rem; color: #5d665f; font-size: .62rem; }
+.discussion-github-list-item > code { min-width: 0; max-width: 42%; overflow-wrap: anywhere; }
+.discussion-github-item-main > strong:first-child { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.discussion-github-pull-item { align-items: center; }
+.discussion-github-pull-number { color: #7c8278; font-weight: 650; }
+.discussion-github-status { flex: 0 0 auto; border: 1px solid transparent; border-radius: 99px; padding: .2rem .43rem; font-size: .58rem; font-weight: 700; }
+.discussion-github-status.is-open { border-color: rgb(70 98 77 / 18%); background: rgb(70 98 77 / 6%); color: #46624d; }
+.discussion-github-status.is-draft { border-color: rgb(23 21 18 / 10%); background: #f3f0e8; color: #77776e; }
 .discussion-github-labels { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .15rem; }
 .discussion-github-labels > span { border: 1px solid color-mix(in srgb, var(--label-color) 28%, white); border-radius: 99px; background: color-mix(in srgb, var(--label-color) 9%, white); padding: .16rem .38rem; color: #343d36; font-size: .58rem; }
-.discussion-github-empty { padding: 1.5rem .3rem; color: #77776e; font-size: .75rem; }
+.discussion-github-empty { display: grid; gap: .18rem; min-height: 6rem; align-content: center; padding: .85rem .35rem; }
+.discussion-github-empty strong { color: #343d36; font-size: .73rem; font-weight: 700; }
+.discussion-github-empty span { color: #858479; font-size: .66rem; line-height: 1.5; }
+.discussion-github-tab-section { padding-top: .85rem; }
+.discussion-github-tab-section .discussion-github-list-item { padding: .75rem .4rem; }
+.discussion-github-overview-section .discussion-github-list-item { padding-block: .68rem; }
+@media (min-width: 768px) {
+  .discussion-github-repo-header h2 { white-space: nowrap; }
+}
+@media (max-width: 900px) {
+  .discussion-github-repo-header { align-items: stretch; flex-direction: column; gap: .9rem; }
+  .discussion-github-repo-actions { justify-content: flex-start; }
+  .discussion-github-overview { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1000px) {
+  .discussion-github-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .discussion-github-stats > div:nth-child(4) { border-left: 0; border-top: 1px solid rgb(23 21 18 / 8%); }
+  .discussion-github-stats > div:nth-child(5) { border-top: 1px solid rgb(23 21 18 / 8%); }
+}
 @media (max-width: 767px) {
-  .discussion-github-panel { min-height: 23rem; padding: 1rem; }
-  .discussion-github-repo-header { flex-direction: column; }
+  .discussion-github-panel { padding: 1rem; }
+  .discussion-github-state { min-height: 11rem; }
+  .discussion-github-repo-header { align-items: stretch; flex-direction: column; gap: .9rem; padding-bottom: .9rem; }
+  .discussion-github-repo-header h2 { white-space: normal; }
   .discussion-github-repo-actions { width: 100%; flex-wrap: wrap; }
+  .discussion-github-open-button { flex: 1 1 auto; }
   .discussion-github-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .discussion-github-stats > div:last-child { grid-column: 1 / -1; }
-  .discussion-github-overview { grid-template-columns: minmax(0, 1fr); gap: .85rem; }
+  .discussion-github-stats > div { padding: .5rem .65rem; }
+  .discussion-github-stats > div + div { border-left: 0; }
+  .discussion-github-stats > div:nth-child(even) { border-left: 1px solid rgb(23 21 18 / 8%); }
+  .discussion-github-stats > div:nth-child(n+3) { border-top: 1px solid rgb(23 21 18 / 8%); }
+  .discussion-github-stats > div:last-child { grid-column: 1 / -1; border-left: 0; }
+  .discussion-github-tabs button { padding-inline: .62rem; }
+  .discussion-github-overview { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .discussion-github-list-item { gap: .45rem; }
   .discussion-github-list-item time { max-width: 6rem; font-size: .58rem; }
+  .discussion-github-status { align-self: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) { .discussion-github-loading > span { animation: none; } }
 
