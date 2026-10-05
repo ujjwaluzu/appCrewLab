@@ -1023,3 +1023,10 @@ a.discussion-github-list-item:hover { background: rgb(243 238 227 / 58%); }
 .calendar-add:hover,.agenda-error button:hover{background:#333}
 .danger-pill:hover{transform:translateY(-1px)}
 @media(max-width:559px){.agenda-event-card{grid-template-columns:58px minmax(0,1fr) 10px}.event-modal{max-height:calc(100dvh - 24px);padding:19px}}
+
+/* Keep the sidebar and mobile drawer from growing wider than their panels. */
+.workspace-sidebar,.mobile-drawer{min-width:0;overflow-x:hidden}
+.workspace-sidebar>div:first-child{overflow-x:hidden}
+.workspace-sidebar>div:first-child,.mobile-drawer,.workspace-nav,.sidebar-actions,.sidebar-notification-wrap,.sidebar-notification-list,.sidebar-user{min-width:0;max-width:100%}
+.sidebar-notification-list>a,.sidebar-notification-list b,.sidebar-notification-list p{min-width:0;overflow-wrap:anywhere}
+.sidebar-user>span:last-child{min-width:0}
