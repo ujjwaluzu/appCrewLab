@@ -1030,3 +1030,10 @@ a.discussion-github-list-item:hover { background: rgb(243 238 227 / 58%); }
 .workspace-sidebar>div:first-child,.mobile-drawer,.workspace-nav,.sidebar-actions,.sidebar-notification-wrap,.sidebar-notification-list,.sidebar-user{min-width:0;max-width:100%}
 .sidebar-notification-list>a,.sidebar-notification-list b,.sidebar-notification-list p{min-width:0;overflow-wrap:anywhere}
 .sidebar-user>span:last-child{min-width:0}
+.mobile-drawer .crew-brand{color:#fff;font-family:var(--font-outfit),sans-serif;font-size:24px;font-weight:600;letter-spacing:-.04em;text-transform:none}
+.mobile-drawer .crew-brand-mark{width:30px;height:30px}
+.sidebar-droid{display:grid;height:232px;flex:0 0 232px;place-items:center;margin-top:14px}
+.sidebar-droid-art{width:158px;height:auto;flex:none}
+@media(max-width:1023px){.mobile-drawer .sidebar-droid-mobile{height:232px;margin:8px 0 10px}.mobile-drawer .sidebar-droid-art{width:158px}}
+.workspace-sidebar>div:first-child,.mobile-drawer{scrollbar-width:none}
+.workspace-sidebar>div:first-child::-webkit-scrollbar,.mobile-drawer::-webkit-scrollbar{display:none}
