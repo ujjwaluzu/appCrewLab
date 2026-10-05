@@ -1,16 +1,15 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { createGitHubAppJwt, GitHubApiError, getGitHubAccessToken, getGitHubAppConfig, githubApi } from "@/lib/github";
+import { createGitHubAppJwt, GitHubApiError, getGitHubAccessToken, getGitHubAppConfig, getUserGitHubAppInstallations, githubApi } from "@/lib/github";
 import { getGitHubProjectContext, getGitHubUserContext } from "@/lib/github-project";
 import { getTrustedSiteOrigin } from "@/lib/site";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const stateCookie = "crewlab_github_install_state";
 const projectCookie = "crewlab_github_install_project";
 const userCookie = "crewlab_github_install_user";
 
-type UserInstallations = { installations: Array<{ id: number; app_id: number; account?: { login?: string } }> };
 type AppInstallation = {
   id: number;
   app_id: number;
@@ -39,17 +38,14 @@ export async function GET(request: Request) {
 
   if (!state || state !== expectedState || !expectedUserId || !/^\d+$/.test(installationId)) return fail("install-state-invalid");
 
-  let supabase: Awaited<ReturnType<typeof createClient>>;
   let userId: string;
   if (projectId) {
     const context = await getGitHubProjectContext(projectId);
     if (!context.ok || context.project.owner_id !== context.auth.user.id || context.auth.user.id !== expectedUserId) return fail("owner-check-failed");
-    supabase = context.supabase;
     userId = context.auth.user.id;
   } else {
     const context = await getGitHubUserContext();
     if (!context.ok || context.auth.user.id !== expectedUserId) return fail("install-state-invalid");
-    supabase = context.supabase;
     userId = context.auth.user.id;
   }
 
@@ -58,22 +54,22 @@ export async function GET(request: Request) {
 
   let userAccessToken: string | null;
   try {
-    userAccessToken = await getGitHubAccessToken(supabase, userId);
+    userAccessToken = await getGitHubAccessToken(createAdminClient(), userId);
   } catch {
     return fail("github-account-check-failed");
   }
   if (!userAccessToken) return fail("connect-first");
 
-  let userInstallations: UserInstallations;
+  let userInstallations: Awaited<ReturnType<typeof getUserGitHubAppInstallations>>;
   try {
-    userInstallations = await githubApi<UserInstallations>("/user/installations?per_page=100", userAccessToken);
+    userInstallations = await getUserGitHubAppInstallations(userAccessToken);
   } catch (error) {
     const reason = error instanceof GitHubApiError && error.status === 401
       ? "github-account-expired"
       : "github-account-verification-failed";
     return fail(reason);
   }
-  if (!userInstallations.installations.some((item) => String(item.id) === installationId && String(item.app_id) === appId)) {
+  if (!userInstallations.some((item) => String(item.id) === installationId)) {
     return fail("installation-account-mismatch");
   }
 
@@ -100,7 +96,7 @@ export async function GET(request: Request) {
 
   if (projectId) {
     try {
-      const { error } = await supabase.from("project_github_installations").upsert({
+      const { error } = await createAdminClient().from("project_github_installations").upsert({
         project_id: projectId,
         installation_id: installationId,
         account_login: installation.account.login,

@@ -31,11 +31,14 @@ const callbackMessages: Record<string, { message: string; error?: boolean }> = {
   "installation-account-missing": { message: "GitHub did not return an account for this installation. Retry the installation.", error: true },
   "installation-save-failed": { message: "GitHub verified the installation, but CrewLab could not save it. Check that the GitHub migrations are applied.", error: true },
   "install-state-invalid": { message: "The GitHub setup link expired or could not be verified. Start again from this page.", error: true },
+  disconnected: { message: "Your GitHub account is disconnected." },
 };
 
 export function GitHubSettingsPanel({ githubStatus }: { githubStatus?: string }) {
   const [settings, setSettings] = useState<GitHubSettings | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [disconnecting, setDisconnecting] = useState(false);
 
   const load = useCallback(async () => {
     setError("");
@@ -51,12 +54,32 @@ export function GitHubSettingsPanel({ githubStatus }: { githubStatus?: string })
 
   useEffect(() => { void load(); }, [load]);
 
+  const disconnect = useCallback(async () => {
+    setError("");
+    setNotice("");
+    setDisconnecting(true);
+    try {
+      const response = await fetch("/api/github/connection", { method: "DELETE" });
+      const result = await response.json() as { error?: string; githubRevoked?: boolean };
+      if (!response.ok) throw new Error(result.error || "Could not disconnect your GitHub account.");
+      setNotice(result.githubRevoked
+        ? "Your GitHub account is disconnected and CrewLab's authorization was revoked at GitHub."
+        : "Your GitHub account is disconnected. CrewLab removed its saved token, but GitHub did not confirm the revocation, so revoke the CrewLab app from your GitHub settings.");
+      await load();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Could not disconnect your GitHub account.");
+    } finally {
+      setDisconnecting(false);
+    }
+  }, [load]);
+
   const callback = githubStatus ? callbackMessages[githubStatus] : undefined;
   const installations = settings?.installations ?? [];
 
   return <div className="github-settings-stack">
     {callback ? <p className={`github-settings-notice ${callback.error ? "is-error" : "is-success"}`} role="status">{callback.message}</p> : null}
     {error ? <p className="github-settings-notice is-error" role="alert">{error}</p> : null}
+    {notice ? <p className="github-settings-notice is-success" role="status">{notice}</p> : null}
     {!settings ? <section className="github-settings-card" aria-busy="true"><p className="workspace-eyebrow">GitHub account</p><h2>Checking your connection…</h2></section> : null}
     {settings && !settings.configured ? <section className="github-settings-card" role="alert"><p className="workspace-eyebrow">GitHub App</p><h2>GitHub is not configured yet.</h2><p>Ask the site administrator to finish the server-side GitHub App setup.</p></section> : null}
     {settings?.configured && !settings.connected ? <section className="github-settings-card"><p className="workspace-eyebrow">Step 1</p><h2>Connect your GitHub account</h2><p>Authorize CrewLab once to find your App installations and repositories. Your token stays encrypted on the server.</p><a className="primary-button" href="/api/github/oauth/start">Connect GitHub</a></section> : null}
@@ -65,6 +88,9 @@ export function GitHubSettingsPanel({ githubStatus }: { githubStatus?: string })
         <div className="github-settings-card-heading"><div><p className="workspace-eyebrow">GitHub account</p><h2>Connected as @{settings.githubLogin}</h2></div><span className="github-settings-pill is-connected">Connected</span></div>
         {settings.reauthorize ? <p className="github-settings-inline-error" role="alert">Your GitHub authorization needs to be refreshed. Connect your account again to continue.</p> : <p>Your account connection is shared across your projects. Connect CrewLab once, then choose a repository from each project discussion.</p>}
         {settings.reauthorize ? <a className="primary-button" href="/api/github/oauth/start">Reconnect GitHub</a> : null}
+        <div className="github-settings-actions">
+          <button className="secondary-button" type="button" onClick={() => void disconnect()} disabled={disconnecting}>{disconnecting ? "Disconnecting…" : "Disconnect GitHub account"}</button>
+        </div>
       </section>
       <section className="github-settings-card">
         <div className="github-settings-card-heading"><div><p className="workspace-eyebrow">CrewLab access</p><h2>{installations.length ? "CrewLab is installed" : "Install CrewLab once"}</h2></div><span className={`github-settings-pill ${installations.length ? "is-connected" : ""}`}>{installations.length ? `${installations.length} ${installations.length === 1 ? "account" : "accounts"}` : "Not installed"}</span></div>

@@ -67,6 +67,7 @@ Open <http://localhost:3000>. `.env.local` is gitignored; do not commit credenti
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL used by the browser and server clients. |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key. If the project still uses the legacy key name, `NEXT_PUBLIC_SUPABASE_ANON_KEY` is accepted instead. |
+| `SUPABASE_SECRET_KEY` | Preferred server-only Supabase key used by GitHub routes to store OAuth tokens and verified repository links. `SUPABASE_SERVICE_ROLE_KEY` is accepted as a legacy fallback. Never expose either key to the browser. |
 | `NEXT_PUBLIC_SITE_URL` | Trusted site origin used to build auth redirect URLs. Use the full origin with scheme and no path, such as `http://localhost:3000`. |
 | `GITHUB_APP_ID` | GitHub App ID used to sign short-lived installation tokens. |
 | `GITHUB_APP_SLUG` | GitHub App URL slug used to start repository installation. |
@@ -75,7 +76,7 @@ Open <http://localhost:3000>. `.env.local` is gitignored; do not commit credenti
 | `GITHUB_APP_PRIVATE_KEY` | Server-only PEM private key for GitHub App authentication. Newlines may be literal or written as `\\n`. |
 | `GITHUB_TOKEN_ENCRYPTION_KEY` | Base64-encoded 32-byte key used to encrypt GitHub user tokens at rest. Generate a separate value for each environment. |
 
-Only Supabase publishable/anon keys belong in `NEXT_PUBLIC_*` variables. Never put a service-role key or other secret in a client-visible variable.
+Only Supabase publishable/anon keys belong in `NEXT_PUBLIC_*` variables. Never put a secret or service-role key in a client-visible variable.
 
 ## Supabase setup
 
@@ -91,10 +92,12 @@ Use a development or staging Supabase project. Review and apply the repository m
 8. `supabase/migrations/20260929000100_security_remediation.sql`
 9. `supabase/migrations/20260929000200_project_discussions.sql`
 10. `supabase/migrations/20260929000300_github_repositories.sql`
+11. `supabase/migrations/20260930000000_github_connection_privacy.sql`
+12. `supabase/migrations/20261005000000_github_server_boundaries.sql`
 
 The security-remediation migration adds profile constraints, protects onboarding completion, enforces onboarding checks on restricted mutations, and rate-limits join applications. It checks existing rows before adding constraints and can stop if existing data needs review. Resolve any reported data issue deliberately before retrying; do not weaken constraints or RLS to force a migration through.
 
-The discussion migration adds project chat data and its access policies. The GitHub migration stores encrypted owner authorization tokens and links a repository to a project. It does not store installation access tokens. Review the migration and verify its policies in a development or staging environment before using GitHub linking. No migration is asserted to have been applied by this README.
+The discussion migration adds project chat data and its access policies. The GitHub migration stores encrypted owner authorization tokens and links a repository to a project. It does not store installation access tokens. The GitHub privacy migration adds a `token_version` lock column and splits the installation policy. The GitHub server-boundary migration removes browser write access to repository links and limits token RPCs to the server-only Supabase secret key. It marks existing repository links unverified, so each project owner must reselect the repository once after applying the migration. Keep `SUPABASE_SECRET_KEY` in server environment secrets; `SUPABASE_SERVICE_ROLE_KEY` is supported as a legacy fallback. Review and apply each migration in a development or staging environment before using GitHub linking. No migration is asserted to have been applied by this README.
 
 This README lists the repository migration sequence. It does not assert that any migration has been applied to a particular Supabase environment. Verify migration history and RLS behavior in staging before release.
 
@@ -125,6 +128,18 @@ Keep GitHub's separate "Request user authorization (OAuth) during installation" 
 
 Project owners connect their GitHub account and install CrewLab once from the GitHub tab in the workspace sidebar. In each project discussion, the owner can then choose a repository from any of their CrewLab App installations. Installation tokens are minted server-side and restricted to the selected repository. The connected repository's metadata, commits, branches, open pull requests, and open issues are intentionally visible to all CrewLab members of that project, including for private repositories. Crew members do not receive a GitHub token from CrewLab. The owner can unlink a repository from a project; removing or suspending the App installation at GitHub also revokes access to its repositories.
 
+### What is shared and what stays private
+
+These are separate concerns, and the distinction is deliberate:
+
+- **CrewLab connection records are strictly per CrewLab user.** `github_user_connections` is keyed by CrewLab user id. Authenticated sessions can select only non-sensitive columns. Token RPCs are callable only with the server-only Supabase secret key (which uses the `service_role` database role); browser sessions cannot read token ciphertext or write token rows. Keep that key out of client bundles and public environment variables.
+- **Refresh tokens are single use, so refresh is coordinated.** GitHub invalidates a refresh token once it is exchanged. A request that notices an expired access token therefore runs through a single in-flight exchange per user and commits the new pair under an optimistic `token_version` check. If another instance already rotated the row, the loser re-reads and uses the winner's token rather than reporting a false "reauthorize" state. A reconnect that returns no refresh token keeps the stored one instead of erasing a token that is still valid.
+- **CrewLab App installations are shared at the GitHub account or organization level.** One GitHub App serves every CrewLab user, so an installation is shared infrastructure. Any CrewLab user whom GitHub itself authorizes for that installation will see it listed on their own GitHub tab, because it belongs to the GitHub account or organization rather than to another CrewLab user. Seeing the same organization listed on two CrewLab accounts is expected and is not a cross-account connection.
+- **Two CrewLab accounts may authorize the same GitHub identity.** They keep separate connection rows with separate encrypted tokens, and neither can read, refresh, or overwrite the other's.
+- **Installation and repository ids are never proof of authorization.** Repository links can only be written by the server after checking the project owner's accessible installations against that owner's GitHub token. Authenticated browsers can read links allowed by project membership, but cannot write installation or repository ids.
+
+Users can disconnect their GitHub account from the GitHub tab. CrewLab obtains the current access token, deletes the local row, then calls GitHub's `DELETE /applications/{client_id}/token` with that token to revoke the authorization. The local row is deleted first because it is CrewLab's source of truth: if GitHub does not confirm the revocation the disconnect still stands, and the interface says so rather than reporting a false success. Unlinking a repository from a project is separate and does not revoke the account connection.
+
 Generate `GITHUB_TOKEN_ENCRYPTION_KEY` as base64 for 32 random bytes (for example, `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"`). Store distinct values in local, preview, staging, and production secret stores. Rotating this key requires reconnecting accounts whose stored tokens were encrypted with the old key. Before enabling the feature in an environment, configure the App URLs there, set the variables in that environment, apply the migration sequence to its non-production database as approved, and verify the full owner/member flow with test accounts and a test repository.
 
 ## Validation commands
@@ -134,10 +149,11 @@ Run the checks supported by the current package scripts:
 ```powershell
 npm run lint
 npx tsc --noEmit
+npm test
 npm run build
 ```
 
-There is currently no automated test script or browser E2E framework configured in `package.json`. Do not treat the commands above as a substitute for the staging flow checks below.
+`npm test` runs the Vitest suite covering GitHub user isolation, encrypted token storage and refresh scoping, concurrent refresh of a single-use refresh token, reconnect preserving a stored refresh token, OAuth callback session binding, the install-start failure redirect, account disconnect and GitHub-side revocation, and project repository authorization. There is currently no browser E2E framework configured, so do not treat these commands as a substitute for the staging flow checks below.
 
 ## Staging and release prerequisites
 

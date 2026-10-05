@@ -4,14 +4,23 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const apiVersion = "2026-03-10";
 
+/** Non-sensitive columns selected through the caller-scoped client. */
 export type GitHubUserConnection = {
   user_id: string;
   github_user_id: string;
   github_login: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Ciphertexts plus the optimistic-lock version used to detect a concurrent rotation. */
+export type GitHubConnectionTokens = {
+  user_id: string;
   access_token_encrypted: string;
   refresh_token_encrypted: string | null;
   access_token_expires_at: string | null;
   refresh_token_expires_at: string | null;
+  token_version: number;
 };
 
 export type GitHubRepository = {
@@ -47,7 +56,7 @@ export function getGitHubAppConfig() {
 
 export function isGitHubAppConfigured() {
   const config = getGitHubAppConfig();
-  return Boolean(config.appId && config.slug && config.clientId && config.clientSecret && config.privateKey && process.env.GITHUB_TOKEN_ENCRYPTION_KEY);
+  return Boolean(config.appId && config.slug && config.clientId && config.clientSecret && config.privateKey && process.env.GITHUB_TOKEN_ENCRYPTION_KEY && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY));
 }
 
 export function encryptGitHubToken(token: string) {
@@ -78,47 +87,184 @@ function decryptGitHubToken(value: string) {
 export async function getGitHubConnection(supabase: SupabaseClient, userId: string) {
   const { data, error } = await supabase
     .from("github_user_connections")
-    .select("user_id, github_user_id, github_login, access_token_encrypted, refresh_token_encrypted, access_token_expires_at, refresh_token_expires_at")
+    .select("user_id, github_user_id, github_login, created_at, updated_at")
     .eq("user_id", userId)
     .maybeSingle();
   if (error) throw new Error("Could not load GitHub connection.");
   return data as GitHubUserConnection | null;
 }
 
-export async function getGitHubAccessToken(supabase: SupabaseClient, userId: string) {
-  const connection = await getGitHubConnection(supabase, userId);
-  if (!connection) return null;
+async function readGitHubConnectionTokens(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase.rpc("github_user_connection_tokens", { target_user_id: userId });
+  if (error) throw new Error("Could not load GitHub connection.");
+  const row = (Array.isArray(data) ? data[0] : data) as GitHubConnectionTokens | null | undefined;
+  if (!row) return null;
+  // The function already constrains the row to auth.uid(); re-check so a future
+  // change to it can never widen this read to another account's tokens.
+  if (row.user_id !== userId) throw new Error("Could not load GitHub connection.");
+  return row;
+}
+
+/**
+ * A token is usable when it is unexpired with a minute of headroom, or when GitHub
+ * reported no expiry at all because token expiration is disabled on the App.
+ * Throws if the stored ciphertext cannot be decrypted.
+ */
+function usableAccessToken(connection: GitHubConnectionTokens): string | null {
+  if (!connection.access_token_encrypted) return null;
   if (!connection.access_token_expires_at || Date.parse(connection.access_token_expires_at) > Date.now() + 60_000) {
     return decryptGitHubToken(connection.access_token_encrypted);
   }
-  if (!connection.refresh_token_encrypted || !connection.refresh_token_expires_at || Date.parse(connection.refresh_token_expires_at) <= Date.now()) return null;
+  return null;
+}
 
-  const { clientId, clientSecret } = getGitHubAppConfig();
-  const refreshResponse = await fetch("https://github.com/login/oauth/access_token", {
+/**
+ * GitHub refresh tokens are single use: once one is exchanged, both it and the old
+ * access token stop working. Without coordination two requests that notice the same
+ * expiry both exchange the same refresh token, the loser gets 400 invalid_grant, and
+ * the caller reports "reauthorize" for a connection that another request just
+ * refreshed successfully. One in-flight exchange per user keeps this process honest;
+ * token_version covers the other instances of a serverless deployment, where a loser
+ * re-reads the winner's row instead of failing.
+ */
+const inFlightRefreshes = new Map<string, Promise<string | null>>();
+
+function singleFlightRefresh(key: string, exchange: () => Promise<string | null>): Promise<string | null> {
+  const existing = inFlightRefreshes.get(key);
+  if (existing) return existing;
+  const started = exchange().finally(() => { inFlightRefreshes.delete(key); });
+  inFlightRefreshes.set(key, started);
+  return started;
+}
+
+type RefreshedToken = {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  refresh_token_expires_in?: number;
+};
+
+async function requestTokenExchange(body: Record<string, unknown>) {
+  const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      grant_type: "refresh_token",
-      refresh_token: decryptGitHubToken(connection.refresh_token_encrypted),
-    }),
+    body: JSON.stringify(body),
     cache: "no-store",
   });
-  if (!refreshResponse.ok) return null;
-  const refreshed = await refreshResponse.json() as { access_token?: string; refresh_token?: string; expires_in?: number; refresh_token_expires_in?: number };
-  if (!refreshed.access_token) return null;
+  if (!response.ok) return null;
+  const tokenData = await response.json() as Partial<RefreshedToken> & { error?: string };
+  if (!tokenData.access_token || tokenData.error) return null;
+  return tokenData as RefreshedToken;
+}
 
-  const now = Date.now();
-  const { error } = await supabase.from("github_user_connections").update({
-    access_token_encrypted: encryptGitHubToken(refreshed.access_token),
-    refresh_token_encrypted: refreshed.refresh_token ? encryptGitHubToken(refreshed.refresh_token) : connection.refresh_token_encrypted,
-    access_token_expires_at: refreshed.expires_in ? new Date(now + refreshed.expires_in * 1000).toISOString() : null,
-    refresh_token_expires_at: refreshed.refresh_token_expires_in ? new Date(now + refreshed.refresh_token_expires_in * 1000).toISOString() : connection.refresh_token_expires_at,
-    updated_at: new Date(now).toISOString(),
-  }).eq("user_id", userId);
+/** GitHub reports lifetimes in seconds; a missing value means token expiration is disabled on the App. */
+export function expiryFromSeconds(seconds: number | undefined) {
+  return seconds ? new Date(Date.now() + seconds * 1000).toISOString() : null;
+}
+
+/** Re-reads after losing the optimistic-lock race so the winner's token is used. */
+async function reReadUsableToken(supabase: SupabaseClient, userId: string, versionBeforeRace: number) {
+  try {
+    const current = await readGitHubConnectionTokens(supabase, userId);
+    if (!current || current.token_version === versionBeforeRace) return null;
+    return usableAccessToken(current);
+  } catch {
+    return null;
+  }
+}
+
+async function rotateGitHubAccessToken(supabase: SupabaseClient, userId: string, connection: GitHubConnectionTokens) {
+  const { clientId, clientSecret } = getGitHubAppConfig();
+  if (!clientId || !clientSecret || !connection.refresh_token_encrypted) return null;
+
+  const refreshed = await requestTokenExchange({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: decryptGitHubToken(connection.refresh_token_encrypted),
+  });
+
+  // A rejected exchange is ambiguous: the refresh token may simply have been
+  // consumed by another instance moments earlier. Only report a failure if the
+  // stored row is genuinely unchanged.
+  if (!refreshed) return reReadUsableToken(supabase, userId, connection.token_version);
+
+  const { data, error } = await supabase.rpc("github_apply_refreshed_token", {
+    target_user_id: userId,
+    expected_token_version: connection.token_version,
+    new_access_token_encrypted: encryptGitHubToken(refreshed.access_token),
+    new_refresh_token_encrypted: refreshed.refresh_token ? encryptGitHubToken(refreshed.refresh_token) : null,
+    new_access_token_expires_at: expiryFromSeconds(refreshed.expires_in),
+    new_refresh_token_expires_at: expiryFromSeconds(refreshed.refresh_token_expires_in),
+  });
   if (error) throw new Error("Could not refresh GitHub connection.");
-  return refreshed.access_token;
+  if (data === true) return refreshed.access_token;
+
+  return reReadUsableToken(supabase, userId, connection.token_version);
+}
+
+export async function getGitHubAccessToken(supabase: SupabaseClient, userId: string) {
+  const connection = await readGitHubConnectionTokens(supabase, userId);
+  if (!connection) return null;
+
+  const ready = usableAccessToken(connection);
+  if (ready) return ready;
+
+  const refreshable = connection.refresh_token_encrypted
+    && connection.refresh_token_expires_at
+    && Date.parse(connection.refresh_token_expires_at) > Date.now();
+  if (!refreshable) return null;
+
+  return singleFlightRefresh(`github-token-refresh:${userId}`, () => rotateGitHubAccessToken(supabase, userId, connection));
+}
+
+/** Stores a completed OAuth exchange, preserving any still-valid refresh token. */
+export async function saveGitHubConnection(supabase: SupabaseClient, userId: string, connection: {
+  githubUserId: string;
+  githubLogin: string;
+  accessTokenEncrypted: string;
+  refreshTokenEncrypted: string | null;
+  accessTokenExpiresAt: string | null;
+  refreshTokenExpiresAt: string | null;
+}) {
+  const { error } = await supabase.rpc("github_upsert_user_connection", {
+    target_user_id: userId,
+    github_user_id: connection.githubUserId,
+    github_login: connection.githubLogin,
+    access_token_encrypted: connection.accessTokenEncrypted,
+    refresh_token_encrypted: connection.refreshTokenEncrypted,
+    access_token_expires_at: connection.accessTokenExpiresAt,
+    refresh_token_expires_at: connection.refreshTokenExpiresAt,
+  });
+  if (error) throw new Error("Connection could not be saved.");
+}
+
+/** Removes the caller's connection row. Returns false when there was nothing to remove. */
+export async function deleteGitHubConnection(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase.rpc("github_delete_user_connection", { target_user_id: userId });
+  if (error) throw new Error("Could not disconnect your GitHub account.");
+  return data === true;
+}
+
+/**
+ * Revokes every token the user granted this GitHub App, including refresh tokens.
+ * Uses client id and secret as HTTP Basic credentials rather than a bearer token,
+ * which is the only authentication this endpoint accepts.
+ */
+export async function revokeGitHubUserAuthorization(clientId: string, clientSecret: string, accessToken: string) {
+  const credentials = Buffer.from(`${clientId}:${clientSecret}`, "utf8").toString("base64");
+  const response = await fetch(`https://api.github.com/applications/${encodeURIComponent(clientId)}/token`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": apiVersion,
+    },
+    body: JSON.stringify({ access_token: accessToken }),
+    cache: "no-store",
+  });
+  return response.ok;
 }
 
 export function createGitHubAppJwt() {
@@ -162,7 +308,7 @@ export type GitHubAppInstallation = {
 export async function getUserGitHubAppInstallations(userAccessToken: string) {
   const { appId } = getGitHubAppConfig();
   const installations: GitHubAppInstallation[] = [];
-  for (let page = 1; page <= 10; page += 1) {
+  for (let page = 1; ; page += 1) {
     const result = await githubApi<{ installations: GitHubAppInstallation[] }>(
       `/user/installations?per_page=100&page=${page}`,
       userAccessToken,

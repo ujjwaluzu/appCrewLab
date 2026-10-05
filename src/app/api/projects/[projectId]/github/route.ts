@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createInstallationToken, getGitHubAccessToken, getUserGitHubAppInstallations, GitHubApiError, githubApi, isGitHubAppConfigured, type GitHubRepository } from "@/lib/github";
 import { getGitHubProjectContext } from "@/lib/github-project";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type RouteContext = { params: Promise<{ projectId: string }> };
 type Commit = { sha: string; html_url: string; commit: { message: string; author: { name: string; date: string } | null }; author: { login: string; avatar_url: string } | null };
@@ -14,12 +15,19 @@ export async function GET(_request: Request, route: RouteContext) {
   const context = await getGitHubProjectContext(projectId);
   if (!context.ok) return NextResponse.json({ error: context.error.message }, { status: context.error.status });
 
-  const { data: repository, error: repositoryError } = await context.supabase
+  const { data: foundRepository, error: repositoryError } = await context.supabase
     .from("project_github_repositories")
-    .select("installation_id, repository_id, full_name, html_url, is_private, default_branch")
+    .select("installation_id, repository_id, full_name, html_url, is_private, default_branch, server_verified_at")
     .eq("project_id", projectId)
     .maybeSingle();
   if (repositoryError) return NextResponse.json({ error: "Could not load the linked repository." }, { status: 503 });
+  let repository = foundRepository;
+  let needsRelink = false;
+  if (repository && !repository.server_verified_at) {
+    if (context.project.owner_id !== context.auth.user.id) return NextResponse.json({ state: "relink-required" });
+    needsRelink = true;
+    repository = null;
+  }
   if (!repository) {
     if (context.project.owner_id !== context.auth.user.id) return NextResponse.json({ state: "not-linked" });
     if (!isGitHubAppConfigured()) return NextResponse.json({ state: "setup-required" });
@@ -31,10 +39,10 @@ export async function GET(_request: Request, route: RouteContext) {
     if (userError) return NextResponse.json({ error: "Could not load the GitHub account." }, { status: 503 });
     if (!userConnection) return NextResponse.json({ state: "connect-account" });
     try {
-      const accessToken = await getGitHubAccessToken(context.supabase, context.auth.user.id);
+      const accessToken = await getGitHubAccessToken(createAdminClient(), context.auth.user.id);
       if (!accessToken) return NextResponse.json({ state: "connect-account", githubLogin: userConnection.github_login, reauthorize: true });
       const installations = await getUserGitHubAppInstallations(accessToken);
-      return NextResponse.json({ state: installations.length ? "choose-repository" : "install-app", githubLogin: userConnection.github_login });
+      return NextResponse.json({ state: installations.length ? "choose-repository" : "install-app", githubLogin: userConnection.github_login, relinkRequired: needsRelink });
     } catch {
       return NextResponse.json({ error: "Could not check the connected GitHub account. Reconnect and try again." }, { status: 502 });
     }

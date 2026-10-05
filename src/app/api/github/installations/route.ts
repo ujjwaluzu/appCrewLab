@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getGitHubAccessToken, getGitHubAppConfig, getUserGitHubAppInstallations, isGitHubAppConfigured } from "@/lib/github";
 import { getGitHubUserContext } from "@/lib/github-project";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET() {
   const context = await getGitHubUserContext();
@@ -17,7 +18,7 @@ export async function GET() {
   if (!connection) return NextResponse.json({ configured: true, connected: false, installations: [] });
 
   try {
-    const accessToken = await getGitHubAccessToken(context.supabase, context.auth.user.id);
+    const accessToken = await getGitHubAccessToken(createAdminClient(), context.auth.user.id);
     if (!accessToken) return NextResponse.json({ configured: true, connected: true, githubLogin: connection.github_login, reauthorize: true, installations: [] });
     const installations = await getUserGitHubAppInstallations(accessToken);
     return NextResponse.json({

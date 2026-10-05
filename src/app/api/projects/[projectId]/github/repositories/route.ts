@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createInstallationToken, getGitHubAccessToken, getInstallationRepositories, getUserGitHubAppInstallations, githubApi, type GitHubRepository } from "@/lib/github";
 import { getGitHubProjectContext } from "@/lib/github-project";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type RouteContext = { params: Promise<{ projectId: string }> };
 type InstallationRepositories = { repositories: GitHubRepository[] };
@@ -11,7 +12,7 @@ async function getProjectOwner(projectId: string) {
   if (!context.ok) return { response: NextResponse.json({ error: context.error.message }, { status: context.error.status }) };
   if (context.project.owner_id !== context.auth.user.id) return { response: NextResponse.json({ error: "Only the project owner can connect a repository." }, { status: 403 }) };
   try {
-    const accessToken = await getGitHubAccessToken(context.supabase, context.auth.user.id);
+    const accessToken = await getGitHubAccessToken(createAdminClient(), context.auth.user.id);
     if (!accessToken) return { response: NextResponse.json({ error: "Connect your GitHub account from the GitHub tab first." }, { status: 409 }) };
     const installations = await getUserGitHubAppInstallations(accessToken);
     if (!installations.length) return { response: NextResponse.json({ error: "Install the CrewLab App from the GitHub tab first." }, { status: 409 }) };
@@ -74,7 +75,8 @@ export async function POST(request: Request, route: RouteContext) {
     const installation = owner.installations.find((item) => String(item.id) === installationId);
     if (!installation?.account?.login) return NextResponse.json({ error: "Could not verify the GitHub account for that installation." }, { status: 409 });
 
-    const { error: installationError } = await owner.context.supabase.from("project_github_installations").upsert({
+    const admin = createAdminClient();
+    const { error: installationError } = await admin.from("project_github_installations").upsert({
       project_id: projectId,
       installation_id: installationId,
       account_login: installation.account.login,
@@ -82,7 +84,7 @@ export async function POST(request: Request, route: RouteContext) {
     });
     if (installationError) return NextResponse.json({ error: "Could not save the GitHub installation for this project." }, { status: 503 });
 
-    const { error } = await owner.context.supabase.from("project_github_repositories").upsert({
+    const { error } = await admin.from("project_github_repositories").upsert({
       project_id: projectId,
       installation_id: installationId,
       repository_id: String(repository.id),
@@ -91,6 +93,7 @@ export async function POST(request: Request, route: RouteContext) {
       is_private: repository.private,
       default_branch: repository.default_branch,
       connected_by: owner.context.auth.user.id,
+      server_verified_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
     if (error) return NextResponse.json({ error: "Could not save the selected repository." }, { status: 503 });
@@ -105,7 +108,11 @@ export async function DELETE(_request: Request, route: RouteContext) {
   const context = await getGitHubProjectContext(projectId);
   if (!context.ok) return NextResponse.json({ error: context.error.message }, { status: context.error.status });
   if (context.project.owner_id !== context.auth.user.id) return NextResponse.json({ error: "Only the project owner can disconnect the repository." }, { status: 403 });
-  const { error } = await context.supabase.from("project_github_repositories").delete().eq("project_id", projectId);
-  if (error) return NextResponse.json({ error: "Could not disconnect the repository." }, { status: 503 });
-  return NextResponse.json({ connected: false });
+  try {
+    const { error } = await createAdminClient().from("project_github_repositories").delete().eq("project_id", projectId);
+    if (error) return NextResponse.json({ error: "Could not disconnect the repository." }, { status: 503 });
+    return NextResponse.json({ connected: false });
+  } catch {
+    return NextResponse.json({ error: "GitHub server storage is not configured." }, { status: 503 });
+  }
 }

@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { encryptGitHubToken, getGitHubAppConfig, githubApi } from "@/lib/github";
+import { encryptGitHubToken, expiryFromSeconds, getGitHubAppConfig, githubApi, saveGitHubConnection } from "@/lib/github";
 import { getGitHubProjectContext, getGitHubUserContext } from "@/lib/github-project";
 import { getTrustedSiteOrigin } from "@/lib/site";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const stateCookie = "crewlab_github_oauth_state";
 const verifierCookie = "crewlab_github_oauth_verifier";
@@ -39,19 +39,16 @@ export async function GET(request: Request) {
     return fail("connection-failed");
   }
 
-  let supabase: Awaited<ReturnType<typeof createClient>>;
   let userId: string;
   if (projectId) {
     const context = await getGitHubProjectContext(projectId);
     if (!context.ok || context.project.owner_id !== context.auth.user.id || context.auth.user.id !== expectedUserId) {
       return fail("connection-failed");
     }
-    supabase = context.supabase;
     userId = context.auth.user.id;
   } else {
     const context = await getGitHubUserContext();
     if (!context.ok || context.auth.user.id !== expectedUserId) return fail("connection-failed");
-    supabase = context.supabase;
     userId = context.auth.user.id;
   }
 
@@ -76,17 +73,17 @@ export async function GET(request: Request) {
     if (!tokenData.access_token || tokenData.error) throw new Error("GitHub authorization failed.");
 
     const githubUser = await githubApi<GitHubUser>("/user", tokenData.access_token);
-    const { error } = await supabase.from("github_user_connections").upsert({
-      user_id: userId,
-      github_user_id: String(githubUser.id),
-      github_login: githubUser.login,
-      access_token_encrypted: encryptGitHubToken(tokenData.access_token),
-      refresh_token_encrypted: tokenData.refresh_token ? encryptGitHubToken(tokenData.refresh_token) : null,
-      access_token_expires_at: tokenData.expires_in ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString() : null,
-      refresh_token_expires_at: tokenData.refresh_token_expires_in ? new Date(Date.now() + tokenData.refresh_token_expires_in * 1000).toISOString() : null,
-      updated_at: new Date().toISOString(),
+    // The upsert keeps the stored refresh token when GitHub omits a new one, so a
+    // reconnect that returns only an access token cannot strand a valid six-month
+    // refresh token.
+    await saveGitHubConnection(createAdminClient(), userId, {
+      githubUserId: String(githubUser.id),
+      githubLogin: githubUser.login,
+      accessTokenEncrypted: encryptGitHubToken(tokenData.access_token),
+      refreshTokenEncrypted: tokenData.refresh_token ? encryptGitHubToken(tokenData.refresh_token) : null,
+      accessTokenExpiresAt: expiryFromSeconds(tokenData.expires_in),
+      refreshTokenExpiresAt: expiryFromSeconds(tokenData.refresh_token_expires_in),
     });
-    if (error) throw new Error("Connection could not be saved.");
 
     return cleanup(NextResponse.redirect(new URL(`${target}?github=connected`, origin)));
   } catch {

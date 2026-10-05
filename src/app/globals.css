@@ -886,6 +886,8 @@ a.discussion-github-list-item:hover { background: rgb(243 238 227 / 55%); }
 .github-settings-card .primary-button:hover { background: #a33c32; }
 .github-settings-card .secondary-button { border: 1px solid rgb(23 21 18 / 16%); background: #fffefa; color: #343d36; }
 .github-settings-card .secondary-button:hover { background: #eee9df; }
+.github-settings-card .secondary-button:disabled { cursor: wait; opacity: .55; }
+.github-settings-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
 .github-settings-card .workspace-eyebrow { color: #a33c32; font-size: .65rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .github-settings-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .github-settings-card-heading > div { display: grid; gap: .25rem; }

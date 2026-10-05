@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { getGitHubAccessToken, getGitHubAppConfig } from "@/lib/github";
 import { getGitHubProjectContext, getGitHubUserContext } from "@/lib/github-project";
 import { getTrustedSiteOrigin } from "@/lib/site";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const stateCookie = "crewlab_github_install_state";
 const projectCookie = "crewlab_github_install_project";
@@ -18,22 +18,26 @@ export async function GET(request: Request) {
 
   const target = projectId ? `/discussion/${encodeURIComponent(projectId)}` : "/github";
   let userId: string;
-  let supabase: Awaited<ReturnType<typeof createClient>>;
   if (projectId) {
     const context = await getGitHubProjectContext(projectId);
     if (!context.ok) return NextResponse.redirect(new URL(`${target}?github=error`, origin));
     if (context.project.owner_id !== context.auth.user.id) return NextResponse.redirect(new URL(`${target}?github=owner-required`, origin));
     userId = context.auth.user.id;
-    supabase = context.supabase;
   } else {
     const context = await getGitHubUserContext();
     if (!context.ok) return NextResponse.redirect(new URL(`${target}?github=error`, origin));
     userId = context.auth.user.id;
-    supabase = context.supabase;
   }
 
   const { slug } = getGitHubAppConfig();
-  const accessToken = await getGitHubAccessToken(supabase, userId);
+  let accessToken: string | null;
+  try {
+    accessToken = await getGitHubAccessToken(createAdminClient(), userId);
+  } catch {
+    // A corrupt ciphertext, a failed refresh write, or a connection read error must
+    // send the user back to the connect step rather than surface a 500.
+    return NextResponse.redirect(new URL(`${target}?github=connect-first`, origin));
+  }
   if (!slug || !accessToken) return NextResponse.redirect(new URL(`${target}?github=connect-first`, origin));
 
   const state = randomBytes(32).toString("hex");
