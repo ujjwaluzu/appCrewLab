@@ -51,13 +51,13 @@ export default async function GitHubPage({ searchParams }: PageProps) {
         <div className="github-guide-management">
           <section className="github-guide-card">
             <h3>Disconnect your GitHub account</h3>
-            <p>Select <strong>Disconnect GitHub account</strong> above to remove CrewLab's saved account authorization. CrewLab will also ask GitHub to revoke that authorization. This does not uninstall the CrewLab App or unlink repositories from projects.</p>
+            <p>Select <strong>Disconnect GitHub account</strong> above to remove CrewLab&apos;s saved account authorization. CrewLab will also ask GitHub to revoke that authorization. This does not uninstall the CrewLab App or unlink repositories from projects.</p>
             <p>If the page says GitHub did not confirm revocation, sign in as the GitHub user who connected the account and revoke CrewLab under <a href="https://github.com/settings/apps/authorizations" target="_blank" rel="noreferrer">Authorized GitHub Apps</a>.</p>
           </section>
           <section className="github-guide-card">
             <h3>Uninstall CrewLab from an account or organization</h3>
-            <p>To remove the App's repository access, open GitHub's <a href="https://github.com/settings/installations" target="_blank" rel="noreferrer">Installed GitHub Apps</a>, find CrewLab, select <strong>Configure</strong>, then select <strong>Uninstall</strong>. For an organization installation, an organization owner can open the organization's <strong>Settings &gt; Third-party Access &gt; GitHub Apps</strong>, configure CrewLab, and uninstall it there.</p>
-            <p>Uninstalling removes CrewLab's access for that account or organization. If CrewLab is installed in more than one place, repeat these steps for each installation. To fully remove GitHub access, also disconnect your account above or revoke CrewLab under Authorized GitHub Apps.</p>
+            <p>To remove the App&apos;s repository access, open GitHub&apos;s <a href="https://github.com/settings/installations" target="_blank" rel="noreferrer">Installed GitHub Apps</a>, find CrewLab, select <strong>Configure</strong>, then select <strong>Uninstall</strong>. For an organization installation, an organization owner can open the organization&apos;s <strong>Settings &gt; Third-party Access &gt; GitHub Apps</strong>, configure CrewLab, and uninstall it there.</p>
+            <p>Uninstalling removes CrewLab&apos;s access for that account or organization. If CrewLab is installed in more than one place, repeat these steps for each installation. To fully remove GitHub access, also disconnect your account above or revoke CrewLab under Authorized GitHub Apps.</p>
           </section>
         </div>
       </section>
