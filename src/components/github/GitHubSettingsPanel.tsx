@@ -52,7 +52,7 @@ export function GitHubSettingsPanel({ githubStatus }: { githubStatus?: string })
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { const task = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(task); }, [load]);
 
   const disconnect = useCallback(async () => {
     setError("");

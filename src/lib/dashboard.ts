@@ -110,7 +110,7 @@ export async function getHomeDashboardData(userId: string): Promise<HomeDashboar
   const [projects, crew, applications] = await Promise.all([
     (async () => {
       try {
-        const result = await getDashboardOwnedProjects(userId, 3);
+        const result = await getDashboardOwnedProjects(userId, 4);
         return { items: result.projects, count: result.count, error: result.error };
       } catch {
         return { items: [], count: null, error: true };

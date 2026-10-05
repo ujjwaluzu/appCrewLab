@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getGitHubAccessToken, getGitHubAppConfig, getUserGitHubAppInstallations, isGitHubAppConfigured } from "@/lib/github";
+import { getGitHubAccessToken, getUserGitHubAppInstallations, isGitHubAppConfigured } from "@/lib/github";
 import { getGitHubUserContext } from "@/lib/github-project";
 import { createAdminClient } from "@/lib/supabase/admin";
 
