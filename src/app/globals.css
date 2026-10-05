@@ -902,4 +902,15 @@ a.discussion-github-list-item:hover { background: rgb(243 238 227 / 55%); }
 .github-installation-list strong { color: #26362c; font-size: .78rem; }
 .github-installation-list small,.github-settings-footnote { color: #77776e; font-size: .68rem; line-height: 1.55; }
 .github-settings-footnote { max-width: 44rem; padding: .2rem .1rem; }
+.github-guide { display: grid; max-width: 48rem; gap: 1rem; margin-top: 3rem; }
+.github-guide-heading { display: grid; gap: .55rem; margin-bottom: .25rem; }
+.github-guide-heading .workspace-eyebrow { color: #a33c32; font-size: .65rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.github-guide-heading h2 { color: #171512; font-size: clamp(1.45rem,2.5vw,2rem); font-weight: 750; letter-spacing: -.045em; }
+.github-guide-heading > p:last-child,.github-guide-card p { color: #69766e; font-size: .82rem; line-height: 1.65; }
+.github-guide-steps { display: grid; gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.github-guide-management { display: grid; gap: .75rem; }
+.github-guide-card { display: grid; gap: .55rem; border: 1px solid var(--border-subtle); border-radius: .95rem; background: #fffefa; padding: clamp(1.1rem,2vw,1.5rem); }
+.github-guide-card h3 { color: #171512; font-size: 1rem; font-weight: 750; letter-spacing: -.025em; }
+.github-guide-card a { color: #a33c32; font-weight: 700; text-underline-offset: .15em; }
+@media (min-width: 760px) { .github-guide-management { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 767px) { .github-settings-card-heading { flex-direction: column; } }
