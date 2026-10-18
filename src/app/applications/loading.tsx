@@ -1,6 +1,5 @@
-export default function ApplicationsLoading() {
-  return <main className="workspace-page mx-auto max-w-6xl applications-loading" aria-label="Loading applications" aria-busy="true">
-    <div className="applications-loading-heading"><span /><span /><span /></div>
-    <div className="applications-loading-grid"><section><span /><span /><span /></section><section><span /><span /><span /></section></div>
-  </main>;
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+
+export default function LoadingApplications() {
+  return <main className="route-loading" aria-busy="true"><LoadingSpinner label="Loading applications" /></main>;
 }

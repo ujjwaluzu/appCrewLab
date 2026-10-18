@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { SkillPicker, type SelectedSkill } from "@/components/skills/SkillPicker";
 import { DroidPanel } from "@/components/visuals/DroidPanel";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { intents } from "@/data/intents";
 import { createClient } from "@/lib/supabase/browser";
 
@@ -193,7 +194,7 @@ export function OnboardingWizard() {
     }
   }
 
-  if (isLoading) return <div className="flex min-h-[50vh] items-center justify-center text-sm text-[#66736b]">Checking your session...</div>;
+  if (isLoading) return <div className="onboarding-loading"><LoadingSpinner label="Checking your session" /></div>;
 
   return (
     <main className="auth-page min-h-screen px-4 py-4 text-[#17251f] sm:px-7 sm:py-7">

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { FeatureDroid } from "@/components/visuals/FeatureDroid";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { getInitials } from "@/lib/profile-utils";
 import type { UserProfile } from "@/lib/profile";
 
@@ -28,17 +29,17 @@ function Icon({ name }: { name: string }) {
 }
 
 function SearchBar() {
-  const [query, setQuery] = useState(""); const [scope, setScope] = useState<Scope>("projects"); const [results, setResults] = useState<{ title: string; subtitle: string; href: string }[]>([]); const [open, setOpen] = useState(false); const [active, setActive] = useState(-1);
+  const [query, setQuery] = useState(""); const [scope, setScope] = useState<Scope>("projects"); const [results, setResults] = useState<{ title: string; subtitle: string; href: string }[]>([]); const [open, setOpen] = useState(false); const [active, setActive] = useState(-1); const [loading, setLoading] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); input.current?.focus(); setOpen(true); } if (e.key === "Escape") setOpen(false); if (open && e.key === "ArrowDown") { e.preventDefault(); setActive((v) => Math.min(v + 1, results.length - 1)); } if (open && e.key === "ArrowUp") { e.preventDefault(); setActive((v) => Math.max(v - 1, 0)); } if (open && e.key === "Enter") { e.preventDefault(); window.location.href = active >= 0 && results[active] ? results[active].href : `/search?q=${encodeURIComponent(query)}&in=${scope}`; } };
     window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler);
   }, [open, results, active, query, scope]);
-  useEffect(() => { if (!query.trim()) return; const timer = setTimeout(async () => { try { const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&in=${scope}`); const data = await response.json(); setResults(data.results ?? []); setOpen(true); setActive(-1); } catch { setResults([]); } }, 250); return () => clearTimeout(timer); }, [query, scope]);
+  useEffect(() => { if (!query.trim()) { setLoading(false); setResults([]); return; } setLoading(true); const timer = setTimeout(async () => { try { const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&in=${scope}`); const data = await response.json(); setResults(data.results ?? []); setActive(-1); } catch { setResults([]); } finally { setLoading(false); } }, 250); return () => clearTimeout(timer); }, [query, scope]);
   const scopes: Scope[] = ["projects", "builders", "skills", "discussions"];
   return <div className="search-area">
-    <div className="search-pill"><button className="search-submit" aria-label="Search CrewLab" onClick={() => {input.current?.focus();setOpen(true);}}><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4.2 4.2"/></svg></button><input ref={input} value={query} onFocus={() => query && setOpen(true)} onChange={(e) => setQuery(e.target.value)} placeholder="Search CrewLab" aria-label="Search CrewLab"/><span className="search-in">In:</span><div className="search-scopes">{scopes.map((item) => <button key={item} onClick={() => setScope(item)} className={scope === item ? "is-selected" : ""}>{item[0].toUpperCase() + item.slice(1)}</button>)}</div></div>
-    {open && query.trim() ? <div className="search-results" role="listbox" aria-label={`${scope} search results`}>{results.length ? results.slice(0, 5).map((item, i) => <Link role="option" aria-selected={active === i} key={`${item.href}-${item.title}`} href={item.href} onClick={() => setOpen(false)} className="search-result"><b>{item.title}</b><span>{item.subtitle}</span></Link>) : <p className="search-no-results">No {scope} found.</p>}<Link className="search-all" href={`/search?q=${encodeURIComponent(query)}&in=${scope}`} onClick={() => setOpen(false)}>See all results <span>→</span></Link></div> : null}
+    <div className="search-pill"><button className="search-submit" aria-label="Search CrewLab" onClick={() => {input.current?.focus();setOpen(true);}}><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4.2 4.2"/></svg></button><input ref={input} value={query} onFocus={() => query && setOpen(true)} onChange={(e) => {setQuery(e.target.value);setOpen(Boolean(e.target.value.trim()));}} placeholder="Search CrewLab" aria-label="Search CrewLab"/><span className="search-in">In:</span><div className="search-scopes">{scopes.map((item) => <button key={item} onClick={() => setScope(item)} className={scope === item ? "is-selected" : ""}>{item[0].toUpperCase() + item.slice(1)}</button>)}</div></div>
+    {open && query.trim() ? loading ? <div className="search-results search-results-loading"><LoadingSpinner label="Searching CrewLab" small /></div> : <div className="search-results" role="listbox" aria-label={`${scope} search results`}>{results.length ? results.slice(0, 5).map((item, i) => <Link role="option" aria-selected={active === i} key={`${item.href}-${item.title}`} href={item.href} onClick={() => setOpen(false)} className="search-result"><b>{item.title}</b><span>{item.subtitle}</span></Link>) : <p className="search-no-results">No {scope} found.</p>}<Link className="search-all" href={`/search?q=${encodeURIComponent(query)}&in=${scope}`} onClick={() => setOpen(false)}>See all results <span>→</span></Link></div> : null}
   </div>;
 }
 
