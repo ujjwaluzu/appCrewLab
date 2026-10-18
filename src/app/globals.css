@@ -985,11 +985,16 @@ a.discussion-github-list-item:hover { background: rgb(243 238 227 / 58%); }
 .sidebar-user>span:last-child{min-width:0}
 .mobile-drawer .crew-brand{color:#fff;font-family:var(--font-outfit),sans-serif;font-size:24px;font-weight:600;letter-spacing:-.04em;text-transform:none}
 .mobile-drawer .crew-brand-mark{width:30px;height:30px}
-.sidebar-droid{display:grid;height:232px;flex:0 0 232px;place-items:center;margin-top:14px}
-.sidebar-droid-art{width:158px;height:auto;flex:none}
-@media(max-width:1023px){.mobile-drawer .sidebar-droid-mobile{height:232px;margin:8px 0 10px}.mobile-drawer .sidebar-droid-art{width:158px}}
 .workspace-sidebar>div:first-child,.mobile-drawer{scrollbar-width:none}
 .workspace-sidebar>div:first-child::-webkit-scrollbar,.mobile-drawer::-webkit-scrollbar{display:none}
+
+.settings-account-card{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:16px;border-radius:24px;background:#fff;padding:24px}
+.settings-account-card h2{font-family:var(--font-outfit),sans-serif;font-size:18px;font-weight:600}
+.settings-account-card p{margin-top:4px;color:#666;font-size:13px}
+.settings-logout-button{min-height:42px;border:1px solid rgb(176 34 24 / 18%);border-radius:999px;background:#fff7f3;padding:10px 17px;color:#B02218;font-size:13px;font-weight:650}
+.settings-logout-button:hover{background:#ffede7}
+.settings-logout-button:disabled{cursor:wait;opacity:.6}
+@media(max-width:767px){.settings-account-card{align-items:flex-start;flex-direction:column}}
 
 .crew-loading-spinner{display:flex;min-height:inherit;align-items:center;justify-content:center}
 .crew-loading-spinner.is-inline{min-height:0;flex:0 0 auto}
