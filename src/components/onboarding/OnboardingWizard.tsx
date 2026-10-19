@@ -197,7 +197,7 @@ export function OnboardingWizard() {
   if (isLoading) return <div className="onboarding-loading"><LoadingSpinner label="Checking your session" /></div>;
 
   return (
-    <main className="auth-page min-h-screen px-4 py-4 text-[#17251f] sm:px-7 sm:py-7">
+    <main className="auth-page onboarding-page min-h-screen px-4 py-4 text-[#17251f] sm:px-7 sm:py-7">
       <div className="auth-frame mx-auto flex min-h-[calc(100vh-2rem)] max-w-6xl flex-col overflow-hidden rounded-[2rem] border bg-[#fcfcf8] sm:min-h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-3.5rem)] lg:min-h-0 lg:flex-row">
         <DroidPanel className="min-h-[25rem] lg:min-h-0 lg:w-[36%]" compact eyebrow="Your starting point" title="Let&apos;s make your profile feel like you." body="A few useful details help the right projects and people find you." />
 

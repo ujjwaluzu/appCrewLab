@@ -201,6 +201,94 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .onboarding-meta { border-color: var(--line); }
 .skill-selection { border-color: var(--line); }
 
+/* Onboarding steps stay comfortable on dark screens and adapt to available space. */
+.onboarding-page { min-height: 100dvh; }
+.onboarding-page .auth-frame { height: auto; min-height: calc(100dvh - 3.5rem); }
+.onboarding-page .onboarding-pane { min-width: 0; }
+.onboarding-page .onboarding-content { max-width: 46rem; }
+.onboarding-page .onboarding-meta-label,
+.onboarding-page .onboarding-meta-count { color: var(--muted); }
+.onboarding-page .onboarding-meta-progress span { background: #34332f; }
+.onboarding-page .onboarding-meta-progress span.is-complete { background: var(--accent); }
+.onboarding-page .onboarding-content .animate-fade-in > button:not(.primary-button) {
+  border: 1px solid var(--line); background: #191918; padding: .55rem .8rem;
+  color: var(--foreground); transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+}
+.onboarding-page .onboarding-content .animate-fade-in > button:not(.primary-button):hover {
+  border-color: var(--accent); background: #241613; color: var(--accent);
+}
+.onboarding-page .skill-selection { border-color: var(--line); background: #191918; color: var(--foreground); }
+.onboarding-page .skill-selection p { color: var(--muted); }
+.onboarding-page .skill-chip { border: 1px solid rgb(240 74 46 / 40%); background: #2a1713; color: #ffb19f; }
+.onboarding-page .skill-chip-remove { color: #ffb19f; }
+.onboarding-page .skill-search-input { border-color: var(--line); background: #111110; color: var(--foreground); }
+.onboarding-page .skill-search-input::placeholder { color: #77746b; }
+.onboarding-page .skill-search-clear { color: var(--muted); }
+.onboarding-page .skill-search-clear:hover { background: #242320; color: var(--foreground); }
+.onboarding-page .skill-category { border-color: var(--line); background: #191918; }
+.onboarding-page .skill-category-toggle { color: var(--foreground); }
+.onboarding-page .skill-category-toggle:hover { background: #20201e; }
+.onboarding-page .skill-category-toggle > span:last-child,
+.onboarding-page .skill-section-label,
+.onboarding-page .skill-count,
+.onboarding-page .skill-option-category { color: var(--muted); }
+.onboarding-page .skill-options-grid { border-color: var(--line); background: #111110; }
+.onboarding-page .skill-option { border-color: var(--line); background: #20201e; color: #d7d3ca; }
+.onboarding-page .skill-option:hover { border-color: var(--accent); background: #29201d; }
+.onboarding-page .skill-option.is-selected { border-color: var(--accent); background: #3a1c15; color: #fff0e9; }
+.onboarding-page .skill-option.is-selected .skill-option-category { color: #c8a69d; }
+.onboarding-page .skill-option-check { border-color: #58564f; }
+.onboarding-page .skill-option.is-selected .skill-option-check { border-color: var(--accent); background: var(--accent); color: #0d0d0c; }
+.onboarding-page .skill-empty { border-color: #4b4942; color: var(--muted); }
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button {
+  min-height: 4.5rem; border-color: var(--line); background: #191918; color: var(--foreground);
+}
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button:hover {
+  border-color: #6b4035; background: #211a17;
+}
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button[aria-pressed="true"] {
+  border-color: var(--accent); background: #321a14;
+}
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button > span:first-child > span:first-child { color: var(--foreground); }
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button > span:first-child > span:last-child { color: var(--muted); }
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button > span:last-child {
+  border-color: #58564f; color: transparent;
+}
+.onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button[aria-pressed="true"] > span:last-child {
+  border-color: var(--accent); background: var(--accent); color: #0d0d0c;
+}
+.onboarding-page [role="alert"] { border-color: rgb(240 74 46 / 35%); background: #241613; color: #ffd0c3; }
+
+@media (max-width: 1023px) {
+  .onboarding-page .auth-frame { min-height: calc(100dvh - 2rem); }
+  .onboarding-page .crew-droid-panel { min-height: 19rem !important; padding: 1.4rem; }
+  .onboarding-page .crew-droid-panel .relative.max-w-\[19rem\] { margin-top: 1.5rem; }
+  .onboarding-page .crew-droid-panel h1 { max-width: 20rem; font-size: clamp(2rem, 5vw, 2.7rem); }
+  .onboarding-page .crew-droid-panel .crew-droid-glow { right: 1rem; bottom: 1rem; }
+  .onboarding-page .onboarding-pane { padding-inline: clamp(1.25rem, 5vw, 3rem); }
+}
+@media (max-width: 639px) {
+  .onboarding-page { padding: .65rem !important; }
+  .onboarding-page .auth-frame { min-height: calc(100dvh - 1.3rem); }
+  .onboarding-page .crew-droid-panel { min-height: 13rem !important; padding: 1rem; }
+  .onboarding-page .crew-droid-panel .relative.max-w-\[19rem\] { margin-top: 1rem; }
+  .onboarding-page .crew-droid-panel h1 { max-width: 15rem; margin-top: .7rem; font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .onboarding-page .crew-droid-panel p:not(.crew-panel-eyebrow) { max-width: 14rem; margin-top: .65rem; font-size: .8rem; line-height: 1.45; }
+  .onboarding-page .crew-droid-panel > .relative > .flex { gap: .5rem; }
+  .onboarding-page .crew-droid-panel .crew-droid-glow,
+  .onboarding-page .crew-droid-panel > div.pointer-events-none { display: none; }
+  .onboarding-page .onboarding-pane { padding: 1.25rem 1rem !important; }
+  .onboarding-page .onboarding-content .animate-fade-in > div:has(> button[aria-pressed]) button { padding: .8rem; }
+  .onboarding-page .skill-options-grid { grid-template-columns: 1fr; }
+}
+@media (max-height: 760px) and (min-width: 1024px) {
+  .onboarding-page .auth-frame { min-height: calc(100dvh - 2rem); }
+  .onboarding-page .crew-droid-panel { padding: 1.5rem; }
+  .onboarding-page .crew-droid-panel .relative.max-w-\[19rem\] { margin-top: 2rem; }
+  .onboarding-page .onboarding-pane { padding-block: 1.25rem !important; }
+  .onboarding-page .onboarding-content .onboarding-meta { margin-bottom: 1rem !important; }
+}
+
 .route-error-page { display: flex; min-height: 100dvh; flex-direction: column; background: radial-gradient(ellipse at 50% 100%, rgb(240 74 46 / 8%), transparent 50%), #0d0d0c; color: var(--foreground); }
 .route-error-header { display: flex; min-height: 5rem; align-items: center; border-bottom: 1px solid var(--line); padding-inline: clamp(1.25rem, 5vw, 4rem); }
 .route-error-header .crew-brand { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; }
