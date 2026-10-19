@@ -15,7 +15,12 @@ export function AuthShell({ children, aside = true }: { children: ReactNode; asi
             body="CrewLab gives ambitious builders a calmer place to find momentum, collaborators, and meaningful work."
           >
             <div className="crew-panel-info">
-              <span className="crew-panel-info-mark"><Image src="/favicon_io/favicon-32x32.png" alt="" width={20} height={20} /></span>
+              <span className="crew-panel-info-mark" aria-hidden="true">
+                <svg viewBox="0 0 28 28" width="20" height="20">
+                  <polygon points="14,2 25,8 25,20 14,26 3,20 3,8" fill="#D42B1E" />
+                  <polygon points="14,8 20,11.5 20,16.5 14,20 8,16.5 8,11.5" fill="#0F0E0C" />
+                </svg>
+              </span>
               <span><span className="crew-panel-info-label">Crew signal</span></span>
             </div>
           </DroidPanel>
