@@ -19,7 +19,7 @@ export default async function DiscussionPage() {
   ]);
 
   return <AppShell profile={profile} active="discussion">
-    <div className="workspace-page mx-auto max-w-6xl">
+    <div className="workspace-page discussion-page mx-auto max-w-6xl">
       <header className="workspace-page-heading discussion-page-heading animate-fade-in">
         <div><p className="workspace-eyebrow">Your crew</p><h1>Project <span>discussions.</span></h1><p className="workspace-lede">Choose a project to open its shared discussion space.</p></div>
       </header>

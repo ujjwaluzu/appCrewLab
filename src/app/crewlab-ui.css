@@ -666,3 +666,81 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (prefers-reduced-motion: reduce) {
   body::after { display: none; }
 }
+
+/* Discussion workspace surfaces follow the CrewLabs dark and ember palette. */
+.discussion-page .discussion-project-card,
+.discussion-room-page .discussion-repository-panel,
+.discussion-room-page .discussion-chat,
+.discussion-room-page .discussion-chat-toolbar,
+.discussion-room-page .discussion-chat-composer { border-color: var(--line); background: var(--card); color: var(--foreground); }
+.discussion-page .discussion-project-card:hover { border-color: #f04a2e; background: #191918; box-shadow: 0 12px 30px #0005; }
+.discussion-page .discussion-project-card h2,
+.discussion-room-page .discussion-room-header h1,
+.discussion-room-page .discussion-repository-content h2,
+.discussion-room-page .discussion-chat-toolbar h2,
+.discussion-room-page .discussion-chat-empty h3 { color: var(--foreground); }
+.discussion-page .discussion-project-description,
+.discussion-page .discussion-project-meta,
+.discussion-room-page .discussion-room-header p:not(.workspace-eyebrow),
+.discussion-room-page .discussion-room-meta,
+.discussion-room-page .discussion-repository-content > p:last-child,
+.discussion-room-page .discussion-chat-empty p { color: var(--muted); }
+.discussion-page .discussion-project-meta { border-color: var(--line); }
+.discussion-page .discussion-project-meta > span:last-child { color: var(--foreground); }
+.discussion-page .discussion-project-mark,
+.discussion-room-page .discussion-repository-icon,
+.discussion-room-page .discussion-chat-empty > span { border-color: #f04a2e55; background: #f04a2e18; color: var(--accent); }
+.discussion-room-page .discussion-back-link { color: #c8c5bb; }
+.discussion-room-page .discussion-back-link:hover { background: #20201e; color: var(--foreground); }
+.discussion-room-page .discussion-room-header { border-color: var(--line); }
+.discussion-room-page .discussion-chat-toggle,
+.discussion-room-page .discussion-send-button { border-color: var(--accent); background: var(--accent); color: #0d0d0c; }
+.discussion-room-page .discussion-chat-toggle:hover,
+.discussion-room-page .discussion-send-button:hover:not(:disabled) { background: #ff6549; }
+.discussion-room-page .discussion-live-status { border-color: var(--line); color: var(--muted); }
+.discussion-room-page .discussion-live-status.is-live { border-color: #f04a2e66; background: #f04a2e18; color: #ff8b76; }
+.discussion-room-page .discussion-live-status.is-live > span { background: var(--accent); }
+.discussion-room-page .discussion-chat-bubble { border-color: var(--line); background: #191918; }
+.discussion-room-page .discussion-chat-bubble.is-own-message { border-color: #f04a2e66; background: #3a1e18; }
+.discussion-room-page .discussion-chat-author { color: #ff8b76; }
+.discussion-room-page .discussion-chat-body { color: var(--foreground); }
+.discussion-room-page .discussion-chat-bubble time { color: var(--muted); }
+.discussion-room-page .discussion-chat-composer { border-color: var(--line); }
+.discussion-room-page .discussion-chat-composer textarea { border-color: #3b3a36; background: #0d0d0c; color: var(--foreground); }
+.discussion-room-page .discussion-chat-composer textarea::placeholder { color: #858278; }
+.discussion-room-page .discussion-chat-composer .discussion-form-error { border-color: #f04a2e55; background: #251512; color: #ff9b87; }
+.discussion-page .project-empty-state { border-color: var(--line); background: #141413; color: var(--foreground); }
+.discussion-page .project-empty-state h2 { color: var(--foreground); }
+.discussion-page .project-empty-state p { color: var(--muted); }
+.discussion-page .project-empty-mark { background: #f04a2e18; color: var(--accent); }
+.discussion-room-page .discussion-github-panel { border-color: var(--line); background: #141413; color: var(--foreground); }
+.discussion-room-page .discussion-github-state h2,
+.discussion-room-page .discussion-github-repo-header h2,
+.discussion-room-page .discussion-github-section-heading h3,
+.discussion-room-page .discussion-github-item-main strong,
+.discussion-room-page .discussion-github-stats dd,
+.discussion-room-page .discussion-github-empty strong { color: var(--foreground); }
+.discussion-room-page .discussion-github-state > p:not(.workspace-eyebrow),
+.discussion-room-page .discussion-github-repo-header p,
+.discussion-room-page .discussion-github-section-heading > div > span,
+.discussion-room-page .discussion-github-item-main small,
+.discussion-room-page .discussion-github-list-item time,
+.discussion-room-page .discussion-github-empty span { color: var(--muted); }
+.discussion-room-page .discussion-github-stats,
+.discussion-room-page .discussion-github-list-item code { border-color: var(--line); background: #111110; }
+.discussion-room-page .discussion-github-stats > div + div,
+.discussion-room-page .discussion-github-section-heading,
+.discussion-room-page .discussion-github-list-item { border-color: var(--line); }
+.discussion-room-page .discussion-github-stats dt,
+.discussion-room-page .discussion-github-stats dd code { color: var(--muted); }
+.discussion-room-page .discussion-github-tabs { border-color: var(--line); }
+.discussion-room-page .discussion-github-tabs button { color: var(--muted); }
+.discussion-room-page .discussion-github-tabs button:hover,
+.discussion-room-page .discussion-github-tabs button.is-active { color: var(--foreground); }
+.discussion-room-page .discussion-github-tabs button.is-active { border-bottom-color: var(--accent); }
+.discussion-room-page .discussion-github-tabs button > span { background: #242422; color: var(--muted); }
+.discussion-room-page .discussion-github-open-button,
+.discussion-room-page .discussion-github-state .primary-button { border-color: var(--accent); background: var(--accent); color: #0d0d0c; }
+.discussion-room-page .discussion-github-open-button:hover,
+.discussion-room-page .discussion-github-state .primary-button:hover:not(:disabled) { background: #ff6549; }
+.discussion-room-page a.discussion-github-list-item:hover { background: #1c1c1a; }
