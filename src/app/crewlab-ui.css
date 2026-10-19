@@ -114,6 +114,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .project-description { border-color: var(--line); }
 .home-empty, .home-state, .checklist-card, .calendar-card, .my-crew-card { border: 1px solid var(--line); border-radius: 0; background: #141413; color: var(--foreground); }
 .home-empty h3, .checklist-card h2, .calendar-card h2, .my-crew-card h2 { color: var(--foreground); }
+.calendar-weekday { color: var(--muted); }
+.calendar-day { color: var(--foreground); }
+.calendar-day.other-month { color: #77746b; }
+.calendar-day.selected-day { background: #292824; color: var(--foreground); }
+.calendar-day.today-day { background: var(--accent); color: #0d0d0c; font-weight: 700; }
+.calendar-arrows button { background: #20201e; color: var(--foreground); }
+.calendar-arrows button:hover { background: #302f2b; color: var(--accent); }
+.calendar-add { background: var(--accent); color: #0d0d0c; }
+.calendar-add:hover { background: #ff6a50; color: #0d0d0c; }
 .home-empty p, .home-state { color: var(--muted); }
 .home-completion-track, .profile-progress-track { border-radius: 0; background: #292824; }
 .home-completion-track span, .profile-progress-track span { border-radius: 0; background: var(--accent); }
