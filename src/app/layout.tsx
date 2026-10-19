@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { Figtree, Outfit } from "next/font/google";
+import { Newsreader, Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
+import "./crewlab-ui.css";
 
-const figtree = Figtree({
+const bodyFont = Plus_Jakarta_Sans({
   variable: "--font-figtree",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const outfit = Outfit({
+const displayFont = Newsreader({
   variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+});
+
+const monoFont = Space_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${figtree.variable} ${outfit.variable} h-full antialiased`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

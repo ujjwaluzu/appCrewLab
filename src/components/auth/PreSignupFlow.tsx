@@ -29,8 +29,8 @@ export function PreSignupFlow() {
         <h1 className="max-w-lg text-[clamp(3rem,7vw,5.5rem)] font-semibold leading-[0.92] tracking-[-0.075em] text-[#17251f]">{current.title}</h1>
         <p className="mt-7 max-w-md text-lg leading-8 text-[#59665d]">{current.body}</p>
 
-        <div className="mt-8 max-w-md rounded-[1.35rem] border border-[#17251f]/8 bg-[#f7f8f1] p-4">
-          <div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#171512]"><Image src="/favicon_io/favicon-32x32.png" alt="" width={20} height={20} /></span><div><p className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#7a7466]">Crew signal</p><p className="mt-1 text-sm font-semibold leading-6 text-[#4a463f]">{current.detail}</p></div></div>
+        <div className="auth-signal-card mt-8 max-w-md">
+          <div className="flex items-start gap-3"><span className="auth-signal-mark flex h-9 w-9 shrink-0 items-center justify-center"><Image src="/favicon_io/favicon-32x32.png" alt="" width={20} height={20} /></span><div><p className="auth-signal-label text-[0.65rem] font-bold uppercase tracking-[0.15em]">Crew signal</p><p className="auth-signal-copy mt-1 text-sm font-semibold leading-6">{current.detail}</p></div></div>
         </div>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
