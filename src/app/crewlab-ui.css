@@ -297,9 +297,48 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .profile-page .profile-progress-track { height: .45rem; border-radius: 0; background: #292824; }
 .profile-page .profile-progress-track span { border-radius: 0; background: var(--accent); }
 
+/* Public builder profiles */
+.public-profile-page { gap: 1rem; }
+.public-profile-page .public-profile-hero,
+.public-profile-page .public-profile-section { min-width: 0; border-color: var(--line); border-radius: 0; background: #141413; padding: clamp(1.1rem, 2.7vw, 2rem); }
+.public-profile-page .public-profile-hero { border-top: 2px solid var(--accent); background: #141413; }
+.public-profile-page .public-profile-identity { align-items: center; }
+.public-profile-page .profile-avatar-frame { border-color: #45443e; border-radius: 0; background: #20201e; }
+.public-profile-page .profile-member-label { color: var(--accent); font-family: var(--font-mono), monospace; }
+.public-profile-page .profile-member-label > span { width: .42rem; height: .42rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgb(240 74 46 / 45%); }
+.public-profile-page .public-profile-identity h1 { color: var(--foreground); font-family: var(--font-outfit), serif; font-weight: 500; }
+.public-profile-page .profile-username { color: var(--muted); }
+.public-profile-page .public-profile-intents span,
+.public-profile-page .public-profile-skills > div > span { border-color: #393833; border-radius: 0; background: #20201e; color: #d7d3ca; }
+.public-profile-page .public-profile-skills { border-color: var(--line); }
+.public-profile-page .public-profile-skills h2 { color: var(--accent); font-family: var(--font-mono), monospace; }
+.public-profile-page .profile-section-heading h2 { color: var(--foreground); font-family: var(--font-outfit), serif; font-weight: 500; }
+.public-profile-page .profile-section-count { border-color: #45443e; border-radius: 0; color: var(--muted); font-family: var(--font-mono), monospace; }
+.public-profile-page .public-profile-about { color: #c8c5bb; }
+.public-profile-page .profile-empty-copy { color: var(--muted); }
+.public-profile-page .profile-empty-copy[role="alert"] { color: #ffb19f; }
+.public-profile-page .public-profile-crew-list { gap: .75rem; }
+.public-profile-page .public-profile-crew-card { border-color: var(--line); border-left: 2px solid #45443e; border-radius: 0; background: #191918; padding: clamp(.9rem, 2vw, 1.2rem); transition: border-color 150ms ease, background 150ms ease; }
+.public-profile-page .public-profile-crew-card:hover { border-left-color: var(--accent); background: #1d1c1a; }
+.public-profile-page .public-profile-crew-card .workspace-eyebrow { color: var(--accent); }
+.public-profile-page .public-profile-crew-card h3 { color: var(--foreground); font-family: var(--font-outfit), serif; font-weight: 500; }
+.public-profile-page .public-profile-crew-card > div > p:nth-of-type(2) { color: var(--muted); }
+.public-profile-page .public-profile-crew-card .public-profile-crew-count { color: #d7d3ca; }
+.public-profile-page .public-profile-crew-card .secondary-button { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.public-profile-page .public-profile-crew-card .secondary-button:hover { border-color: var(--accent); background: #2a1713; color: #fff; }
+.public-profile-not-found { min-height: 100dvh; background: #0d0d0c; }
+.public-profile-not-found > div { border-color: var(--line); border-radius: 0; background: #141413; }
+.public-profile-not-found h1 { color: var(--foreground); font-family: var(--font-outfit), serif; font-weight: 500; }
+.public-profile-not-found p:not(.workspace-eyebrow) { color: var(--muted); }
+
 @media (max-width: 767px) {
   .profile-page .profile-quick-stats { border-top-color: var(--line); }
   .profile-page .profile-hero-stamp { top: 1rem; right: 1rem; }
+  .public-profile-page .public-profile-identity { align-items: flex-start; }
+  .public-profile-page .public-profile-hero,
+  .public-profile-page .public-profile-section { padding: 1rem; }
+  .public-profile-page .public-profile-crew-card { align-items: flex-start; }
+  .public-profile-page .public-profile-crew-card .secondary-button { width: 100%; }
 }
 
 @media (max-width: 767px) {
