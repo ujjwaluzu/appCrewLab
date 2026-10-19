@@ -34,9 +34,11 @@ export async function getAuthState(): Promise<AuthState> {
     } else if (isMissingSessionError(error)) {
       return { status: "unauthenticated", user: null, onboardingCompleted: false };
     } else {
+      console.error("[auth] Failed to verify the current session", error?.message ?? "No user was returned");
       return { status: "auth-error", user: null, onboardingCompleted: false };
     }
-  } catch {
+  } catch (error) {
+    console.error("[auth] Session lookup threw an exception", error);
     return { status: "auth-error", user: null, onboardingCompleted: false };
   }
 
@@ -48,12 +50,16 @@ export async function getAuthState(): Promise<AuthState> {
       .eq("id", userId)
       .maybeSingle();
 
-    if (profileError) return { status: "profile-error", user, onboardingCompleted: false };
+    if (profileError) {
+      console.error("[auth] Failed to load the current user's profile", { code: profileError.code, message: profileError.message });
+      return { status: "profile-error", user, onboardingCompleted: false };
+    }
     if (profile?.onboarding_completed === true) {
       return { status: "authenticated", user, onboardingCompleted: true };
     }
     return { status: "onboarding-incomplete", user, onboardingCompleted: false };
-  } catch {
+  } catch (error) {
+    console.error("[auth] Profile lookup threw an exception", error);
     return { status: "profile-error", user, onboardingCompleted: false };
   }
 }

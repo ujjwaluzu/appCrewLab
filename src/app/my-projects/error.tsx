@@ -2,6 +2,6 @@
 
 import { RouteError } from "@/components/app/RouteError";
 
-export default function MyProjectsError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
-  return <RouteError retry={retry} />;
+export default function MyProjectsError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
+  return <RouteError error={error} retry={retry} />;
 }
