@@ -22,6 +22,10 @@ export function ResetPasswordForm() {
     const supabase = createClient();
     let isMounted = true;
 
+    if (new URLSearchParams(window.location.search).get("error") === "recovery") {
+      setError("That reset link has expired or could not be verified. Request a new password reset link.");
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
@@ -57,7 +61,7 @@ export function ResetPasswordForm() {
     setIsSubmitting(true);
     try {
       const { error: resetError } = await createClient().auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: getSiteUrl("/auth/reset-password"),
+        redirectTo: getSiteUrl("/auth/callback?next=/auth/reset-password"),
       });
 
       if (resetError) {
@@ -90,14 +94,15 @@ export function ResetPasswordForm() {
 
     setIsSubmitting(true);
     try {
-      const { error: updateError } = await createClient().auth.updateUser({ password });
+      const supabase = createClient();
+      const { error: updateError } = await supabase.auth.updateUser({ password });
 
       if (updateError) {
         setError(humanizeAuthError(updateError.message));
         return;
       }
 
-      await createClient().auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
       setPassword("");
       setConfirmPassword("");
       setMode("success");
