@@ -142,6 +142,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .form-input::placeholder { color: #77746b; }
 .form-label, .event-modal label { color: #c8c5bb; }
 .form-input:focus, .form-input:hover { border-color: var(--accent); background: #141413; }
+.password-field-wrap { position: relative; }
+.password-input { padding-right: 5.5rem; }
+.password-visibility-toggle {
+  position: absolute; top: 50%; right: 9px; display: grid; width: 34px; height: 34px;
+  transform: translateY(-50%); place-items: center; border: 0; background: transparent;
+  color: var(--accent); cursor: pointer;
+}
+.password-visibility-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.password-visibility-toggle:hover { color: #ff8068; }
+.password-visibility-toggle:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 .event-modal { box-shadow: 0 20px 70px #000b; }
 .modal-heading h2, .event-agenda-heading h3, .event-detail-notes h3 { color: var(--foreground); }
 .event-modal :is(p,small), .event-detail-info-row p { color: var(--muted); }
@@ -172,6 +182,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .auth-content [role="alert"] { border-left: 2px solid var(--accent); }
 .auth-content [role="status"] { border-left: 2px solid #a6bf84; }
 .auth-content .primary-button { color: #0d0d0c; }
+.auth-content .password-visibility-toggle { color: var(--accent); }
+.auth-content .password-visibility-toggle:hover { color: #ff8068; }
 .auth-signal-card { border: 1px solid var(--line); border-left: 2px solid var(--accent); background: #191918; padding: 16px; }
 .auth-signal-mark { border: 1px solid #383732; background: #111110; }
 .auth-signal-label { color: var(--accent) !important; font-family: var(--font-mono), monospace; }

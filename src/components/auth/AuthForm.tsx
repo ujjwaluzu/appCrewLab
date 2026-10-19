@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { humanizeAuthError } from "@/lib/auth-errors";
 import { getAuthCallbackUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/browser";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 
 type AuthMode = "login" | "signup";
 
@@ -108,12 +109,12 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             <label htmlFor="password" className="block text-sm font-semibold text-[#33433a]">Password</label>
             {!isSignup ? <Link href="/auth/reset-password" className="text-xs font-semibold text-[#59665d] underline decoration-[#b7c58b] decoration-2 underline-offset-4 hover:text-[#17251f]">Forgot password?</Link> : null}
           </div>
-          <input id="password" name="password" type="password" autoComplete={isSignup ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} className="form-input" placeholder="••••••••" aria-invalid={Boolean(error)} />
+          <PasswordInput id="password" name="password" autoComplete={isSignup ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" invalid={Boolean(error)} />
         </div>
         {isSignup ? (
           <div>
             <label htmlFor="confirm-password" className="mb-2 block text-sm font-semibold text-[#33433a]">Confirm password</label>
-            <input id="confirm-password" name="confirm-password" type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="form-input" placeholder="••••••••" aria-invalid={Boolean(error)} />
+            <PasswordInput id="confirm-password" name="confirm-password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" invalid={Boolean(error)} />
           </div>
         ) : null}
 

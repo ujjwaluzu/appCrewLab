@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { humanizeAuthError } from "@/lib/auth-errors";
 import { getSiteUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/browser";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 
 type ResetMode = "request" | "update" | "success";
 const recoveryCookieName = "crewlab-password-recovery";
@@ -138,11 +139,11 @@ export function ResetPasswordForm() {
         <form onSubmit={updatePassword} className="mt-9 space-y-5" noValidate>
           <div>
             <label htmlFor="new-password" className="form-label">New password</label>
-            <input id="new-password" name="new-password" type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} className="form-input" placeholder="At least 8 characters" />
+            <PasswordInput id="new-password" name="new-password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 8 characters" />
           </div>
           <div>
             <label htmlFor="confirm-new-password" className="form-label">Confirm new password</label>
-            <input id="confirm-new-password" name="confirm-new-password" type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="form-input" placeholder="Repeat your password" />
+            <PasswordInput id="confirm-new-password" name="confirm-new-password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Repeat your password" />
           </div>
           {error ? <p className="rounded-xl border border-[#bd5d4d]/25 bg-[#fff3f0] px-4 py-3 text-sm leading-6 text-[#9e4639]" role="alert">{error}</p> : null}
           <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center rounded-full bg-[#17251f] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,37,31,0.14)] transition hover:-translate-y-0.5 hover:bg-[#25372f] disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "Updating password..." : "Update password"}</button>
