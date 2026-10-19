@@ -268,6 +268,39 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .onboarding-page [role="alert"] { border-color: rgb(240 74 46 / 35%); background: #241613; color: #ffd0c3; }
 
+/* Keep foreground contrast consistent wherever the accent is used as a surface. */
+.red-pill,
+.primary-button,
+.red-pill:hover,
+.primary-button:hover:not(:disabled),
+.black-pill:hover,
+.calendar-add,
+.calendar-add:hover,
+.mobile-menu-button,
+.search-submit,
+.search-scopes button.is-selected,
+.notification-count,
+.sidebar-avatar,
+.sidebar-notification-count,
+.sidebar-action.is-active,
+.profile-edit-button:hover,
+.crew-small-button:hover:not(:disabled),
+.danger-pill,
+.danger-pill:hover,
+.calendar-day.today-day,
+.owner-avatar,
+.project-detail-head > span,
+.skill-chip,
+.skill-option.is-selected,
+.onboarding-page .skill-option.is-selected,
+.auth-content .auth-back-button:hover,
+.crew-panel-info-mark,
+.onboarding-page .skill-chip,
+.onboarding-page .skill-option.is-selected .skill-option-check {
+  color: #fff;
+}
+.onboarding-page .skill-option.is-selected .skill-option-check { color: #fff; }
+
 @media (max-width: 1023px) {
   .onboarding-page .auth-frame { min-height: calc(100dvh - 2rem); }
   .onboarding-page .crew-droid-panel { min-height: 19rem !important; padding: 1.4rem; }
