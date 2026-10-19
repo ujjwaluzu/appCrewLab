@@ -16,8 +16,6 @@ export function DroidPanel({ eyebrow, title, body, children, className = "", com
   return (
     <aside className={`crew-droid-panel aiptx-droid-stage ${className}`}>
       <div className="crew-panel-grid" aria-hidden="true" />
-      <div className="crew-panel-orb crew-panel-orb-one" aria-hidden="true" />
-      <div className="crew-panel-orb crew-panel-orb-two" aria-hidden="true" />
 
       <div className="relative z-20 flex h-full min-h-[inherit] flex-col">
         <div className="flex items-center justify-between gap-4">
