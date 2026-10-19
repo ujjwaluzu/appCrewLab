@@ -68,6 +68,11 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         return;
       }
 
+      if (isSignup && result.data.user?.identities?.length === 0) {
+        setError("An account with this email already exists. Log in or reset your password.");
+        return;
+      }
+
       if (isSignup && !result.data.session) {
         setNotice("Check your email. We sent you a confirmation link to continue setting up CrewLab.");
         return;
