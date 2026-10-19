@@ -37,7 +37,7 @@ export default async function MyProjectsPage({ searchParams }: PageProps) {
       </header>
 
       {result.error ? <div className="project-empty-state" role="alert"><h2>We couldn&apos;t load your projects.</h2><p>Please try again in a moment.</p><Link href="/my-projects" className="secondary-button mt-5">Try again</Link></div> : result.projects.length ? <>
-        <div className="project-grid">{result.projects.map((project) => <ProjectCard key={project.id} project={project} showUpdatedAt />)}</div>
+        <div className="project-grid">{result.projects.map((project) => <ProjectCard key={project.id} project={project} showUpdatedAt clickable />)}</div>
         {page > 1 || result.hasMore ? <nav className="project-pagination" aria-label="My project pages">
           {page > 1 ? <Link href={`/my-projects?${previousParams.toString()}`} className="secondary-button">← Newer projects</Link> : <span />}
           <span>Page {page}</span>

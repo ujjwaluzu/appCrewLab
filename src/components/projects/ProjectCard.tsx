@@ -5,11 +5,12 @@ import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
 import type { CrewProfile } from "@/lib/crew";
 import type { Project } from "@/lib/projects";
 
-export function ProjectCard({ project, crewProfiles = [], showUpdatedAt = false }: { project: Project; crewProfiles?: CrewProfile[]; showUpdatedAt?: boolean }) {
+export function ProjectCard({ project, crewProfiles = [], showUpdatedAt = false, clickable = false }: { project: Project; crewProfiles?: CrewProfile[]; showUpdatedAt?: boolean; clickable?: boolean }) {
   const name = project.owner?.display_name || project.owner?.username || "CrewLab builder";
 
   return (
-    <article className="project-card">
+    <article className={`project-card ${clickable ? "is-clickable" : ""}`}>
+      {clickable ? <Link href={`/projects/${project.id}`} className="project-card-overlay" aria-label={`Open project: ${project.title}`} /> : null}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <Link href={`/projects/${project.id}`} className="project-card-title">{project.title}</Link>

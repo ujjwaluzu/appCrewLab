@@ -137,6 +137,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .event-modal, .skill-selection, .skill-category, .skill-option {
   border-color: var(--line); border-radius: 0; background: #141413; color: var(--foreground);
 }
+.project-card.is-clickable { position: relative; isolation: isolate; cursor: pointer; transition: border-color 160ms ease, background 160ms ease, transform 160ms ease; }
+.project-card.is-clickable:hover { border-color: var(--accent); background: #191918; transform: translateY(-2px); }
+.project-card-overlay { position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
+.project-card.is-clickable > :not(.project-card-overlay) { position: relative; z-index: 1; pointer-events: none; }
+.project-card.is-clickable a:not(.project-card-overlay) { pointer-events: auto; }
+.project-card-overlay:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.project-card.is-clickable .project-card-title { text-decoration: none; }
+.project-card.is-clickable:hover .project-card-title { color: var(--accent); }
+.project-empty-state { border-color: var(--line); background: #141413; color: var(--foreground); }
+.project-empty-state h1, .project-empty-state h2 { color: var(--foreground); }
+.project-empty-state p { color: var(--muted); }
+.project-empty-mark { border: 1px solid rgb(240 74 46 / 40%); border-radius: 0; background: #2a1713; color: #fff; }
 .project-card :is(h2,h3,a), .applications-list-card :is(h2,h3,a), .settings-profile-card :is(h2,h3),
 .settings-account-card h2, .github-guide-card h3, .search-page-results h2,
 .applications-empty h3, .profile-card :is(h2,h3), .discussion-card :is(h2,h3) { color: var(--foreground); }
