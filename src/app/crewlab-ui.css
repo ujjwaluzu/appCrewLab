@@ -149,6 +149,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .project-empty-state h1, .project-empty-state h2 { color: var(--foreground); }
 .project-empty-state p { color: var(--muted); }
 .project-empty-mark { border: 1px solid rgb(240 74 46 / 40%); border-radius: 0; background: #2a1713; color: #fff; }
+.project-card .project-status { border-color: #45443e; background: #20201e; color: #d7d3ca; }
+.project-card .project-status-idea { border-color: rgb(240 74 46 / 35%); background: #2a1713; color: #ffb19f; }
+.project-card .project-status-building { border-color: #39463b; background: #1b241d; color: #b8d0bb; }
+.project-card .project-status-paused { border-color: #45443e; background: #20201e; color: #c8c5bb; }
+.project-card .project-status-completed { border-color: #35473f; background: #19231f; color: #b6d4c6; }
+.project-card .project-skill-chip { border-color: #393833; border-radius: 0; background: #20201e; color: #c8c5bb; }
+.project-card .project-card-owner { color: var(--foreground); }
+.project-card .project-card-crew-person,
+.project-card .project-card-crew-more,
+.project-card .project-card-meta,
+.project-card .project-card-updated { color: var(--muted); }
+.project-card .project-card-crew-count { color: #d7d3ca; }
 .project-card :is(h2,h3,a), .applications-list-card :is(h2,h3,a), .settings-profile-card :is(h2,h3),
 .settings-account-card h2, .github-guide-card h3, .search-page-results h2,
 .applications-empty h3, .profile-card :is(h2,h3), .discussion-card :is(h2,h3) { color: var(--foreground); }
