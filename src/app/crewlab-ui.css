@@ -184,7 +184,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .auth-content [role="alert"], .auth-content [role="status"] { border-color: var(--line); background: #191918; color: #ece9e0; }
 .auth-content [role="alert"] { border-left: 2px solid var(--accent); }
 .auth-content [role="status"] { border-left: 2px solid var(--accent); }
-.auth-content .primary-button { color: #0d0d0c; }
+.auth-content .primary-button,
+.auth-content .primary-button:hover:not(:disabled) { color: #fff; }
 .auth-content .password-visibility-toggle { color: var(--accent); }
 .auth-content .password-visibility-toggle:hover { color: #ff8068; }
 .auth-signal-card { border: 1px solid var(--line); border-left: 2px solid var(--accent); background: #191918; padding: 16px; }
