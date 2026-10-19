@@ -266,6 +266,60 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .settings-logout-button { border-color: rgb(240 74 46 / 45%); border-radius: 0; background: #241613; color: #ffb19f; font: 400 .7rem/1.2 var(--font-mono), monospace; letter-spacing: .03em; text-transform: uppercase; }
 .settings-logout-button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent); color: #fff; }
 
+/* Application inbox */
+.applications-page .applications-grid { gap: 1rem; }
+.applications-page .applications-panel { border-color: var(--line); border-radius: 0; background: #141413; padding: clamp(1rem, 2.5vw, 1.4rem); }
+.applications-page .applications-panel-heading { border-bottom: 1px solid var(--line); padding-bottom: .8rem; }
+.applications-page .applications-panel-heading h2 { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: 1.5rem; font-weight: 500; }
+.applications-page .applications-panel-description { color: var(--muted); }
+.applications-page .application-count { min-width: 2.5rem; height: 2.5rem; border-color: #45443e; border-radius: 0; background: #20201e; color: var(--foreground); font-family: var(--font-mono), monospace; }
+.applications-page .application-count.is-error { border-color: rgb(240 74 46 / 35%); background: #241613; color: #ffb19f; }
+.applications-page .applications-list { gap: .7rem; }
+.applications-page .applications-list-card { border-color: var(--line); border-radius: 0; background: #191918; padding: 1rem; transition: border-color 150ms ease, background 150ms ease; }
+.applications-page .applications-list-card:hover { border-color: #51443e; background: #1d1c1a; }
+.applications-page .applications-project-title { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: .95rem; }
+.applications-page .applications-project-title:hover { color: var(--accent); }
+.applications-page .applications-owner { color: var(--muted); }
+.applications-page .applications-list-card footer { border-color: var(--line); color: var(--muted); }
+.applications-page .applications-card-footer time { color: var(--muted); }
+.applications-page .applications-card-action { border: 1px solid var(--line); border-radius: 0; background: #20201e; color: var(--foreground); font: 400 .63rem/1.2 var(--font-mono), monospace; text-transform: uppercase; }
+.applications-page .applications-card-action:hover { border-color: var(--accent); background: #2a1713; color: #fff; }
+.applications-page .home-pending-badge { border-color: rgb(240 74 46 / 35%); border-radius: 0; background: #2a1713; color: #fff; font: 400 .58rem/1.2 var(--font-mono), monospace; letter-spacing: .04em; text-transform: uppercase; }
+.applications-page .applications-empty { border-color: #45443e; border-radius: 0; background: #191918; }
+.applications-page .applications-empty-icon { border-color: rgb(240 74 46 / 35%); border-radius: 0; background: #2a1713; color: var(--accent); }
+.applications-page .applications-empty h3 { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: 1rem; font-weight: 500; }
+.applications-page .applications-empty p { color: var(--muted); }
+.applications-page .applications-empty .secondary-button { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.applications-page .applications-empty .secondary-button:hover { border-color: var(--accent); background: #2a1713; color: #fff; }
+.applications-page .applications-error { border-color: rgb(240 74 46 / 35%); border-radius: 0; background: #241613; color: #ffd0c3; }
+.applications-page .crew-request-card { border-color: var(--line); border-radius: 0; background: #191918; color: var(--foreground); }
+.applications-page .crew-request-card > div p { color: var(--foreground); }
+.applications-page .crew-request-card > div p + p { color: var(--muted); }
+.applications-page .crew-request-card .crew-profile-link { color: #d7d3ca; }
+.applications-page .crew-request-card .crew-profile-link:hover { color: var(--accent); }
+.applications-page .crew-request-card .project-skill-chip { border-color: #393833; border-radius: 0; background: #20201e; color: #d7d3ca; }
+.applications-page .crew-preview-label-button { border-color: rgb(240 74 46 / 45%); border-radius: 0; background: #241613; color: #ffb19f; font: 400 .67rem/1.2 var(--font-mono), monospace; letter-spacing: .03em; text-transform: uppercase; }
+.applications-page .crew-preview-label-button:hover { border-color: var(--accent); background: var(--accent); color: #fff; }
+.applications-page .crew-review-icon { border: 1px solid rgb(240 74 46 / 35%); border-radius: 0; background: #2a1713; color: var(--accent); }
+.applications-page .crew-review-dialog { border-color: var(--line); border-radius: 0; background: #141413; color: var(--foreground); }
+.applications-page .crew-review-dialog-header,
+.applications-page .crew-review-dialog-actions { border-color: var(--line); }
+.applications-page .crew-review-dialog h3,
+.applications-page .crew-review-dialog h4 { color: var(--foreground); }
+.applications-page .crew-review-dialog-content section { border-color: var(--line); border-radius: 0; background: #191918; }
+.applications-page .crew-review-dialog-content h4 { color: var(--accent); }
+.applications-page .crew-review-dialog-content p { color: #d7d3ca; }
+.applications-page .crew-review-dialog-actions { background: #141413; }
+.applications-page .crew-review-dialog-actions .crew-small-button-accept,
+.applications-page .crew-review-dialog-actions .crew-small-button-accept:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.applications-page .crew-review-dialog-actions .crew-small-button-muted { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.applications-page .crew-review-dialog-actions .crew-small-button-muted:hover:not(:disabled) { border-color: var(--accent); background: #2a1713; color: #fff; }
+.applications-page .crew-dialog-close { border: 1px solid var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+
+@media (max-width: 900px) {
+  .applications-page .applications-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* Builder profile */
 .profile-page .profile-hero-card { border-color: var(--line); background: #141413; padding: clamp(1.25rem, 3vw, 2.5rem); }
 .profile-page .profile-hero-card::before { display: none; }

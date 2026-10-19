@@ -29,7 +29,7 @@ export default async function ApplicationsPage() {
   ]);
 
   return <AppShell profile={profile} active="applications">
-    <div className="workspace-page mx-auto max-w-6xl">
+    <div className="workspace-page applications-page mx-auto max-w-6xl">
       <header className="workspace-page-heading applications-page-heading animate-fade-in">
         <div>
           <p className="workspace-eyebrow">Your workspace</p>
