@@ -45,7 +45,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   return (
     <AppShell profile={profile} active="projects">
-      <article className="workspace-page mx-auto max-w-4xl">
+      <article className="workspace-page project-detail-page mx-auto max-w-5xl">
         <Link href="/projects" className="project-back-link">← All projects</Link>
         <header className="project-detail-header mt-7">
           <div className="min-w-0">

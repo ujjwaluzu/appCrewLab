@@ -161,6 +161,88 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .project-card .project-card-meta,
 .project-card .project-card-updated { color: var(--muted); }
 .project-card .project-card-crew-count { color: #d7d3ca; }
+.projects-page .project-filters { border-color: var(--line); border-radius: 0; background: #141413; box-shadow: 0 8px 24px rgb(0 0 0 / 16%); }
+.projects-page .project-filters .form-input { border-color: var(--line); border-radius: 0; background: #111110; color: var(--foreground); }
+.projects-page .project-filters .form-input:hover,
+.projects-page .project-filters .form-input:focus { border-color: var(--accent); background: #111110; }
+.projects-page .project-filters .form-input::placeholder { color: #77746b; }
+.projects-page .project-filters .secondary-button { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.projects-page .project-filters .secondary-button:hover { border-color: var(--accent); background: #2a1713; color: #fff; }
+.projects-page > [role="status"] { border-color: #35473f; border-radius: 0; background: #19231f; color: #b6d4c6; }
+.projects-page .project-pagination { border-color: var(--line); color: var(--muted); }
+.projects-page .project-pagination .secondary-button { border-color: var(--line); border-radius: 0; background: #191918; color: var(--foreground); }
+.projects-page .project-pagination .secondary-button:hover { border-color: var(--accent); background: #241613; color: #fff; }
+.project-detail-page .project-back-link { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font: 400 .7rem/1.4 var(--font-mono), monospace; letter-spacing: .04em; text-transform: uppercase; }
+.project-detail-page .project-back-link:hover { color: var(--accent); }
+.project-detail-page .project-detail-header { align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.project-detail-page .project-detail-header h1 { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 500; letter-spacing: -.05em; line-height: .98; }
+.project-detail-page .project-detail-header > div > p:not(.workspace-eyebrow) { color: var(--muted); font-size: clamp(.95rem, 1.5vw, 1.08rem); line-height: 1.7; }
+.project-detail-page .project-owner-label { border: 1px solid rgb(240 74 46 / 35%); background: #2a1713; padding: .32rem .55rem; color: #ffb19f; font: 400 .62rem/1.3 var(--font-mono), monospace; letter-spacing: .06em; text-transform: uppercase; }
+.project-detail-page .project-status { border-color: #45443e; background: #20201e; color: #d7d3ca; }
+.project-detail-page .project-status-idea { border-color: rgb(240 74 46 / 35%); background: #2a1713; color: #ffb19f; }
+.project-detail-page .project-status-building { border-color: #39463b; background: #1b241d; color: #b8d0bb; }
+.project-detail-page .project-status-paused { border-color: #45443e; background: #20201e; color: #c8c5bb; }
+.project-detail-page .project-status-completed { border-color: #35473f; background: #19231f; color: #b6d4c6; }
+.project-detail-page .project-detail-grid { grid-template-columns: minmax(0, 1fr) minmax(15rem, 18rem); gap: clamp(1.5rem, 5vw, 3.5rem); }
+.project-detail-page .project-detail-section { border-color: var(--line); }
+.project-detail-page .project-detail-section h2 { color: var(--foreground); }
+.project-detail-page .project-detail-section > p:not(.workspace-eyebrow),
+.project-detail-page .project-detail-section > div > p,
+.project-detail-page .project-detail-section > div > div > p { color: var(--muted); }
+.project-detail-page .project-detail-section > p[role="alert"] { color: #ffb19f; }
+.project-detail-page .project-skill-chip { border-color: #393833; border-radius: 0; background: #20201e; color: #d7d3ca; }
+.project-detail-page .project-owner-card { position: sticky; top: 1.5rem; border: 1px solid var(--line); border-left: 2px solid var(--accent); border-radius: 0; background: #141413; padding: 1.25rem; }
+.project-detail-page .project-owner-card > div p { color: var(--foreground); }
+.project-detail-page .project-owner-card > div p + p { color: var(--muted); }
+.project-detail-page .project-owner-card > div:last-child { border-color: var(--line); color: var(--muted); }
+.project-detail-page .crew-member-card,
+.project-detail-page .crew-request-card { border-color: var(--line); border-radius: 0; background: #191918; color: var(--foreground); }
+.project-detail-page .crew-member-card :is(p,h3),
+.project-detail-page .crew-request-card :is(p,h3) { color: var(--foreground); }
+.project-detail-page .crew-member-card .crew-profile-link,
+.project-detail-page .crew-request-card .crew-profile-link { color: #d7d3ca; }
+.project-detail-page .crew-member-card .crew-profile-link:hover,
+.project-detail-page .crew-request-card .crew-profile-link:hover { color: var(--accent); }
+.project-detail-page .crew-role-badge,
+.project-detail-page .crew-request-count { border-color: #45443e; background: #20201e; color: var(--muted); }
+.project-detail-page .crew-role-owner { border-color: rgb(240 74 46 / 35%); background: #2a1713; color: #ffb19f; }
+.project-detail-page #join-requests { border-color: var(--line); border-radius: 0; background: #141413; }
+.project-detail-page #join-requests h2 { color: var(--foreground); }
+.project-detail-page .crew-application-dialog,
+.project-detail-page .crew-review-dialog { border-color: var(--line); border-radius: 0; background: #141413; color: var(--foreground); }
+.project-detail-page .crew-application-dialog h3,
+.project-detail-page .crew-review-dialog h3,
+.project-detail-page .crew-review-dialog h4 { color: var(--foreground); }
+.project-detail-page .crew-review-dialog-header,
+.project-detail-page .crew-review-dialog-actions { border-color: var(--line); }
+.project-detail-page .crew-review-dialog-content section { border-color: var(--line); border-radius: 0; background: #191918; }
+.project-detail-page .crew-review-dialog-content h4 { color: var(--accent); }
+.project-detail-page .crew-review-dialog-content p { color: #d7d3ca; }
+.project-detail-page .crew-review-dialog-actions { background: #141413; }
+.project-detail-page .crew-application-dialog p,
+.project-detail-page .crew-review-dialog p,
+.project-detail-page .crew-review-dialog-content section { color: var(--muted); }
+.project-detail-page .crew-application-dialog > p { border-color: var(--accent); background: #211a17; color: #d7d3ca; }
+.project-detail-page .crew-application-dialog form > div:not(:last-child) { border-color: var(--line); border-radius: 0; background: #191918; }
+.project-detail-page .crew-application-dialog .form-label { color: #d7d3ca; }
+.project-detail-page .crew-application-input { border-color: var(--line); border-radius: 0; background: #111110; color: var(--foreground); }
+.project-detail-page .crew-application-input::placeholder { color: #77746b; }
+.project-detail-page .crew-character-count { color: var(--muted); }
+.project-detail-page .crew-dialog-close { border: 1px solid var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.project-detail-page .crew-dialog-close:hover { background: #292824; color: var(--accent); }
+.project-detail-page .crew-review-icon { border: 1px solid rgb(240 74 46 / 35%); border-radius: 0; background: #2a1713; color: var(--accent); }
+.project-detail-page .crew-small-button-accept,
+.project-detail-page .crew-small-button-accept:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.project-detail-page .crew-small-button-muted { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
+.project-detail-page .crew-small-button-muted:hover:not(:disabled) { border-color: var(--accent); background: #2a1713; color: #fff; }
+
+@media (max-width: 767px) {
+  .project-detail-page .project-detail-header { align-items: flex-start; }
+  .project-detail-page .project-detail-header > a { align-self: stretch; }
+  .project-detail-page .project-detail-grid { grid-template-columns: minmax(0, 1fr); }
+  .project-detail-page .project-owner-card { position: static; }
+  .project-detail-page .crew-member-list { grid-template-columns: minmax(0, 1fr); }
+}
 .project-card :is(h2,h3,a), .applications-list-card :is(h2,h3,a), .settings-profile-card :is(h2,h3),
 .settings-account-card h2, .github-guide-card h3, .search-page-results h2,
 .applications-empty h3, .profile-card :is(h2,h3), .discussion-card :is(h2,h3) { color: var(--foreground); }

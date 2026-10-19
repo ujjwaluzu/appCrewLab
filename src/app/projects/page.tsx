@@ -33,7 +33,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
 
   return (
     <AppShell profile={profile} active="projects">
-      <div className="workspace-page mx-auto max-w-6xl">
+      <div className="workspace-page projects-page mx-auto max-w-6xl">
         <header className="workspace-page-heading projects-page-heading animate-fade-in">
           <div>
             <p className="workspace-eyebrow">Made on CrewLab</p>
@@ -55,7 +55,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
           </div>
         ) : result.projects.length ? (
           <div className="project-grid">
-            {result.projects.map((project) => <ProjectCard key={project.id} project={project} />)}
+            {result.projects.map((project) => <ProjectCard key={project.id} project={project} clickable />)}
           </div>
         ) : query || skillSlug ? (
           <div className="project-empty-state">
