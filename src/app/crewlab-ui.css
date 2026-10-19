@@ -172,6 +172,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .projects-page .project-pagination { border-color: var(--line); color: var(--muted); }
 .projects-page .project-pagination .secondary-button { border-color: var(--line); border-radius: 0; background: #191918; color: var(--foreground); }
 .projects-page .project-pagination .secondary-button:hover { border-color: var(--accent); background: #241613; color: #fff; }
+.my-crew-page .project-grid { gap: 1rem; margin-top: 1.5rem; }
+.my-crew-page .project-empty-state { border-color: #45443e; border-left: 2px solid var(--accent); background: #141413; }
+.my-crew-page .project-empty-mark { border-color: rgb(240 74 46 / 40%); background: #2a1713; color: #fff; }
+.my-crew-page > [role="alert"] { border: 1px solid rgb(240 74 46 / 35%); background: #241613; padding: .8rem 1rem; color: #ffd0c3; }
 .project-detail-page .project-back-link { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font: 400 .7rem/1.4 var(--font-mono), monospace; letter-spacing: .04em; text-transform: uppercase; }
 .project-detail-page .project-back-link:hover { color: var(--accent); }
 .project-detail-page .project-detail-header { align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: clamp(1.5rem, 4vw, 2.5rem); }

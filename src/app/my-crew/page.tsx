@@ -19,7 +19,7 @@ export default async function MyCrewPage() {
   const crewProfiles = result.error ? null : await getProfilesForProjects(result.projects);
 
   return <AppShell profile={profile} active="my-crew">
-    <div className="workspace-page mx-auto max-w-6xl">
+    <div className="workspace-page my-crew-page mx-auto max-w-6xl">
       <header className="workspace-page-heading animate-fade-in">
         <div><p className="workspace-eyebrow">Building together</p><h1>My <span>Crew.</span></h1><p className="workspace-lede">Projects you&apos;re building with others.</p></div>
         <Link href="/projects" className="secondary-button shrink-0">Explore projects</Link>
