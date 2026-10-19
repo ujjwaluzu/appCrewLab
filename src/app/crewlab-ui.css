@@ -236,6 +236,43 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .project-detail-page .crew-small-button-muted { border-color: var(--line); border-radius: 0; background: #20201e; color: var(--foreground); }
 .project-detail-page .crew-small-button-muted:hover:not(:disabled) { border-color: var(--accent); background: #2a1713; color: #fff; }
 
+/* Settings surfaces and profile controls */
+.settings-page { max-width: 62rem; }
+.settings-page h1 { margin-top: .3rem; color: var(--foreground); font-family: var(--font-outfit), serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 500; letter-spacing: -.045em; }
+.settings-page > .workspace-lede { color: var(--muted); }
+.settings-profile-card { align-items: flex-start; border-color: var(--line); border-radius: 0; background: #141413; padding: clamp(1rem, 3vw, 1.75rem); }
+.settings-profile-summary { min-width: min(14rem, 100%); }
+.settings-profile-summary h2 { color: var(--foreground); font-family: var(--font-outfit), serif; font-size: 1.3rem; }
+.settings-profile-summary p { color: var(--muted); }
+.settings-profile-editor { min-width: 0; flex: 1; border-color: var(--line); border-radius: 0; background: #111110; color: var(--foreground); }
+.settings-profile-editor > div:first-child { border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+.settings-profile-editor h2,
+.settings-profile-editor h3 { color: var(--foreground); }
+.settings-profile-editor > div:first-child p { color: var(--accent); }
+.settings-profile-editor > div:first-child button { color: var(--muted); }
+.settings-profile-editor > div:first-child button:hover { color: var(--foreground); }
+.settings-profile-editor .form-label { color: #d7d3ca; }
+.settings-profile-editor > div.space-y-5 p { color: var(--muted); }
+.settings-profile-editor .settings-intent-option { border-color: var(--line); border-radius: 0; background: #191918; color: var(--foreground); }
+.settings-profile-editor .settings-intent-option:hover { border-color: #61534d; background: #211a17; }
+.settings-profile-editor .settings-intent-option[aria-pressed="true"] { border-color: var(--accent); background: #321a14; }
+.settings-profile-editor .settings-intent-option > span:first-child { color: var(--foreground); }
+.settings-profile-editor .settings-intent-option > span:last-child { border-color: #58564f; color: transparent; }
+.settings-profile-editor .settings-intent-option[aria-pressed="true"] > span:last-child { border-color: var(--accent); background: var(--accent); color: #fff; }
+.settings-profile-editor [role="alert"] { border-color: rgb(240 74 46 / 35%); border-radius: 0; background: #241613; color: #ffd0c3; }
+.settings-account-card { align-items: center; border-color: var(--line); border-radius: 0; background: #141413; padding: clamp(1rem, 3vw, 1.5rem); }
+.settings-account-card h2 { color: var(--foreground); font-family: var(--font-outfit), serif; }
+.settings-account-card p { color: var(--muted); }
+.settings-logout-button { border-color: rgb(240 74 46 / 45%); border-radius: 0; background: #241613; color: #ffb19f; font: 400 .7rem/1.2 var(--font-mono), monospace; letter-spacing: .03em; text-transform: uppercase; }
+.settings-logout-button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+@media (max-width: 767px) {
+  .settings-profile-card { gap: 1.25rem; }
+  .settings-profile-summary { min-width: 0; }
+  .settings-profile-editor { width: 100%; padding: 1rem; }
+  .settings-account-card { align-items: flex-start; }
+}
+
 @media (max-width: 767px) {
   .project-detail-page .project-detail-header { align-items: flex-start; }
   .project-detail-page .project-detail-header > a { align-self: stretch; }
