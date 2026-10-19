@@ -744,3 +744,40 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .discussion-room-page .discussion-github-open-button:hover,
 .discussion-room-page .discussion-github-state .primary-button:hover:not(:disabled) { background: #ff6549; }
 .discussion-room-page a.discussion-github-list-item:hover { background: #1c1c1a; }
+
+/* GitHub settings page: connected service controls and setup guide. */
+.github-page .github-settings-stack,
+.github-page .github-guide { max-width: 58rem; }
+.github-page .github-settings-card,
+.github-page .github-guide-card { border-color: var(--line); border-radius: 0; background: #141413; color: var(--foreground); }
+.github-page .github-settings-card h2,
+.github-page .github-guide-heading h2,
+.github-page .github-guide-card h3 { color: var(--foreground); }
+.github-page .github-settings-card > p:not(.workspace-eyebrow),
+.github-page .github-guide-heading > p:last-child,
+.github-page .github-guide-card p { color: #c8c5bb; }
+.github-page .github-settings-card .workspace-eyebrow,
+.github-page .github-guide-heading .workspace-eyebrow { color: var(--accent); }
+.github-page .github-settings-card .primary-button { border: 1px solid var(--accent); border-radius: 0; background: var(--accent); color: #0d0d0c; }
+.github-page .github-settings-card .primary-button:hover { background: #ff6549; }
+.github-page .github-settings-card .secondary-button { border-color: var(--line); border-radius: 0; background: #1b1b19; color: var(--foreground); }
+.github-page .github-settings-card .secondary-button:hover { background: #242422; }
+.github-page .github-settings-pill { border-color: var(--line); border-radius: 0; background: #1b1b19; color: var(--muted); }
+.github-page .github-settings-pill.is-connected { border-color: #f04a2e66; background: #f04a2e18; color: #ff8b76; }
+.github-page .github-settings-notice,
+.github-page .github-settings-inline-error { border-color: #f04a2e55; border-radius: 0; background: #251512; color: #ff9b87; }
+.github-page .github-settings-notice.is-success { border-color: #f04a2e55; background: #211713; color: #ff9b87; }
+.github-page .github-installation-list li { border-color: var(--line); border-radius: 0; background: #111110; }
+.github-page .github-installation-list strong { color: var(--foreground); }
+.github-page .github-installation-list small,
+.github-page .github-settings-footnote { color: var(--muted); }
+.github-page .github-guide { margin-top: 3.5rem; }
+.github-page .github-guide-heading h2 { font-family: var(--font-outfit), sans-serif; font-weight: 500; }
+.github-page .github-guide-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.github-page .github-guide-card { align-content: start; }
+.github-page .github-guide-card a { color: #ff8b76; }
+.github-page .github-guide-management { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 760px) {
+  .github-page .github-guide-steps,
+  .github-page .github-guide-management { grid-template-columns: minmax(0, 1fr); }
+}
