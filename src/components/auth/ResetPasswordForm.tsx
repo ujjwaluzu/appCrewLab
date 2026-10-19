@@ -8,6 +8,7 @@ import { getSiteUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/browser";
 
 type ResetMode = "request" | "update" | "success";
+const recoveryCookieName = "crewlab-password-recovery";
 
 export function ResetPasswordForm() {
   const [mode, setMode] = useState<ResetMode>("request");
@@ -61,13 +62,16 @@ export function ResetPasswordForm() {
     setIsSubmitting(true);
     try {
       const { error: resetError } = await createClient().auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: getSiteUrl("/auth/callback?next=/auth/reset-password"),
+        redirectTo: getSiteUrl("/auth/callback"),
       });
 
       if (resetError) {
         setError(humanizeAuthError(resetError.message));
         return;
       }
+
+      const secure = window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `${recoveryCookieName}=1; Max-Age=1800; Path=/; SameSite=Lax${secure}`;
 
       setNotice("If an account exists for that email, we sent a password reset link. Check your inbox and spam folder.");
     } catch {

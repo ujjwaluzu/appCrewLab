@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 import { getTrustedSiteOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
@@ -8,7 +9,8 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const origin = getTrustedSiteOrigin(request);
   const code = requestUrl.searchParams.get("code");
-  const isPasswordRecovery = requestUrl.searchParams.get("next") === "/auth/reset-password";
+  const cookieStore = await cookies();
+  const isPasswordRecovery = cookieStore.get("crewlab-password-recovery")?.value === "1";
   const returnPath = isPasswordRecovery ? "/auth/reset-password" : "/onboarding";
   const errorPath = isPasswordRecovery
     ? "/auth/reset-password?error=recovery"
@@ -19,6 +21,7 @@ export async function GET(request: Request) {
   }
 
   if (!isSupabaseConfigured() || !code) {
+    cookieStore.delete("crewlab-password-recovery");
     return NextResponse.redirect(new URL(errorPath, origin));
   }
 
@@ -26,8 +29,10 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
+    cookieStore.delete("crewlab-password-recovery");
     return NextResponse.redirect(new URL(errorPath, origin));
   }
 
+  cookieStore.delete("crewlab-password-recovery");
   return NextResponse.redirect(new URL(returnPath, origin));
 }

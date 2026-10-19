@@ -109,6 +109,8 @@ In Supabase Authentication URL Configuration:
 - Allow `/auth/callback` for email confirmation and `/auth/reset-password` for password recovery on each local, preview, staging, and production origin that will be used.
 - Set `NEXT_PUBLIC_SITE_URL` for custom domains and non-Vercel deployments. The callback accepts only configured site/Vercel origins (and localhost during development); forwarded host headers are not trusted.
 
+Keep the Supabase Site URL set to the production origin in the live project; localhost should only be an additional local redirect URL. If using a custom recovery email template, make its link honor the redirect destination passed by the app instead of hardcoding the Site URL. Supabase falls back to its Site URL when a redirect destination is not allowed, which can send production recovery emails to localhost.
+
 The callback exchanges Supabase's code for a session and then routes the user to onboarding. Supabase redirect allowlists must include the exact origins and paths used by the app.
 
 ## GitHub App setup
