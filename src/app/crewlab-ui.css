@@ -477,6 +477,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .form-input::placeholder { color: #77746b; }
 .form-label, .event-modal label { color: #c8c5bb; }
 .form-input:focus, .form-input:hover { border-color: var(--accent); background: #141413; }
+.project-form-card { border-color: var(--line); background: #141413; color: #fff; box-shadow: 0 10px 30px #0005; }
+.project-form-card .form-label, .project-form-card .form-input, .project-form-card .text-right { color: #fff; }
+.project-form-card select option { background: #111110; color: #fff; }
+.project-back-link { color: var(--muted); }
+.project-back-link:hover { color: var(--accent); }
 .password-field-wrap { position: relative; }
 .password-input { padding-right: 5.5rem; }
 .password-visibility-toggle {
@@ -493,6 +498,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .agenda-event-card, .event-agenda-empty, .event-detail-info-row, .event-delete-confirm,
 .search-results-list>a, .skill-selection, .skill-category, .skill-option { background: #191918; color: var(--foreground); }
 .agenda-event-card:hover, .skill-option:hover { border-color: var(--accent); background: #20201e; }
+.skill-category-toggle { color: var(--foreground); }
+.skill-category-toggle:hover { background: #20201e; }
+.skill-category-toggle > span:last-child { color: var(--muted); }
+.skill-options-grid { border-color: var(--line); background: #111110; }
 .agenda-event-time, .event-detail-symbol { border-radius: 0; background: #242320; color: var(--accent); }
 .event-agenda-heading>span { border-radius: 0; background: #20201e; color: var(--muted); }
 .event-detail-actions, .event-agenda, .event-detail-notes { border-color: var(--line); }
