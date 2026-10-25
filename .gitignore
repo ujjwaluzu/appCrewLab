@@ -13,7 +13,10 @@ CLAUDE.md
 
 # testing
 /coverage
-tests
+/tests
+!/tests/
+/tests/*
+!/tests/notifications-search-routes.test.ts
 # next.js
 /.next/
 /out/
