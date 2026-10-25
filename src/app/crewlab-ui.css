@@ -375,6 +375,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* Builder profile */
+.profile-page .profile-page-heading:has(.settings-profile-editor) {
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 1.5rem;
+  border-bottom: 0; padding-bottom: 0;
+}
+.profile-page .profile-page-heading:has(.settings-profile-editor) > div:first-child {
+  border-bottom: 1px solid var(--line); padding-bottom: 1.5rem;
+}
+.profile-page .profile-page-heading:has(.settings-profile-editor) .settings-profile-editor {
+  width: 100%;
+}
 .profile-page .profile-hero-card { border-color: var(--line); background: #141413; padding: clamp(1.25rem, 3vw, 2.5rem); }
 .profile-page .profile-hero-card::before { display: none; }
 .profile-page .profile-member-label { color: var(--accent); font-family: var(--font-mono), monospace; }
